@@ -1,0 +1,27 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node build/index.js",
+    "dev": "concurrently \"npm run watchTs\" \"npm run watchServer\"",
+    "watchTs": "tsc",
+    "watchServer": "supervisor build/index.js"
+  },
+  "author": "zw9love",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^8.0.54",
+    "async": "^2.6.0",
+    "body-parser": "^1.18.2",
+    "connect-multiparty": "^2.1.0",
+    "express": "^4.16.2",
+    "mysql": "^2.15.0",
+    "opn": "^5.1.0",
+    "require": "^2.4.20",
+    "treeify": "^1.0.1",
+    "util": "^0.10.3"
+  }
+}
