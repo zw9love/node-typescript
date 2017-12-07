@@ -13,12 +13,6 @@ var index_1 = require("../../dao/index");
 // 1、
 var index_2 = require("../../filters/index");
 var index_3 = require("../../util/index");
-// 2、
-// let { autoGetData } = require('../../filters/index')
-// let { getJson } = require('../../util/index')
-// 3、
-// import util from '../../util/index'
-// let { getJson} = util
 var Service = /** @class */ (function () {
     function Service() {
         this.dao = new index_1.default();

@@ -8,13 +8,10 @@ import mysql = require('mysql')
 import async = require('async');
 
 // 接口
-// interface databaseDataIf {
-//     host: string,
-//     port: string | number,
-//     database: string,
-//     user: string,
-//     password: string,
-// }
+interface dataJson {
+    sql: string
+    dataArr: Array<string>
+}
 
 export default class Dao {
 
@@ -58,7 +55,7 @@ export default class Dao {
      * @param successFn 成功执行的回调函数
      * @param errorFn 失败执行的回调函数
      */
-    public connectTransaction(taskArr: any, successFn?: Function, errorFn?: Function): void {
+    public connectTransaction(taskArr: Array<dataJson>, successFn?: Function, errorFn?: Function): void {
 
         let connection = mysql.createConnection(this.databaseData);
 

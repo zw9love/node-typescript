@@ -7,14 +7,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // let mysql = require('mysql');
 var mysql = require("mysql");
 var async = require("async");
-// 接口
-// interface databaseDataIf {
-//     host: string,
-//     port: string | number,
-//     database: string,
-//     user: string,
-//     password: string,
-// }
 var Dao = /** @class */ (function () {
     function Dao() {
         this.databaseData = {

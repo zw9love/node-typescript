@@ -6,6 +6,10 @@
 // let service = require('../../service/host/index')
 import Service from '../../service/host/index'
 
+interface response {
+    send:Function
+}
+
 export default class Host {
     public service = new Service()
     constructor() { }
@@ -15,12 +19,10 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    getData(host_ids, response, next) {
+    getData(host_ids: null | string, response: response, next: Function): void{
         this.service.getData(host_ids, data => {
             response.send(JSON.stringify(data));
-        }, o => {
-            next()
-        })
+        }, next)
     }
     /**
      * @description 根据主机ids删除数据
@@ -28,12 +30,10 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    deleteDataById(host_ids, response, next) {
+    deleteDataById(host_ids: string, response: response, next: Function): void {
         this.service.deleteData(host_ids, data => {
             response.send(JSON.stringify(data));
-        }, o => {
-            next()
-        })
+        }, next)
     }
     /**
      * @description 批量删除主机
@@ -41,12 +41,10 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    deleteDataBatch(idsArr, response, next) {
+    deleteDataBatch(idsArr: Array<string>, response: response, next: Function): void{
         this.service.deleteData(idsArr, data => {
             response.send(JSON.stringify(data));
-        }, o => {
-            next()
-        })
+        }, next)
     }
     /**
      * @description 更新数据
@@ -54,12 +52,10 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    upDateData(json, response, next) {
+    upDateData(json, response: response, next: Function) :void{
         this.service.upDateData(json, data => {
             response.send(JSON.stringify(data));
-        }, o => {
-            next()
-        })
+        }, next)
     }
     /**
      * @description 添加数据
@@ -67,12 +63,10 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    addData(json, response, next) {
+    addData(json, response: response, next: Function): void {
         this.service.addData(json, data => {
             response.send(JSON.stringify(data));
-        }, o => {
-            next()
-        })
+        }, next)
     }
 
 }

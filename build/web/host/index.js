@@ -19,9 +19,7 @@ var Host = /** @class */ (function () {
     Host.prototype.getData = function (host_ids, response, next) {
         this.service.getData(host_ids, function (data) {
             response.send(JSON.stringify(data));
-        }, function (o) {
-            next();
-        });
+        }, next);
     };
     /**
      * @description 根据主机ids删除数据
@@ -32,9 +30,7 @@ var Host = /** @class */ (function () {
     Host.prototype.deleteDataById = function (host_ids, response, next) {
         this.service.deleteData(host_ids, function (data) {
             response.send(JSON.stringify(data));
-        }, function (o) {
-            next();
-        });
+        }, next);
     };
     /**
      * @description 批量删除主机
@@ -45,9 +41,7 @@ var Host = /** @class */ (function () {
     Host.prototype.deleteDataBatch = function (idsArr, response, next) {
         this.service.deleteData(idsArr, function (data) {
             response.send(JSON.stringify(data));
-        }, function (o) {
-            next();
-        });
+        }, next);
     };
     /**
      * @description 更新数据
@@ -58,9 +52,7 @@ var Host = /** @class */ (function () {
     Host.prototype.upDateData = function (json, response, next) {
         this.service.upDateData(json, function (data) {
             response.send(JSON.stringify(data));
-        }, function (o) {
-            next();
-        });
+        }, next);
     };
     /**
      * @description 添加数据
@@ -71,9 +63,7 @@ var Host = /** @class */ (function () {
     Host.prototype.addData = function (json, response, next) {
         this.service.addData(json, function (data) {
             response.send(JSON.stringify(data));
-        }, function (o) {
-            next();
-        });
+        }, next);
     };
     return Host;
 }());
