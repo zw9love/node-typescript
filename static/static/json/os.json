@@ -1,0 +1,81 @@
+{
+  "os": [
+    {
+      "name": "Windows",
+      "value": "windows",
+      "versions": [
+        {
+          "value": "2003",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        },
+        {
+          "value": "2008",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        },
+        {
+          "value": "2012",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        },
+        {
+          "value": "7",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        },
+        {
+          "value": "8",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        },
+        {
+          "value": "10",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        },
+        {
+          "value": "xp",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Linux",
+      "value": "linux",
+      "versions": [
+        {
+          "name": "centos",
+          "value": "centos",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        },
+        {
+          "name": "redhat",
+          "value": "redhat",
+          "arch": [
+            "x86",
+            "x64"
+          ]
+        }
+      ]
+    }
+  ]
+}

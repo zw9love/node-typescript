@@ -1,0 +1,68 @@
+{
+  "disk": [
+    {
+      "ids": "rICXM6rwSBVsUa89JcW",
+      "serial_number": "",
+      "model": "VMware Virtual S1.0 ",
+      "host_ids": "59e030b755dc020240410421",
+      "manufacturer": "VMware, VMware Virtual S1.0 "
+    }
+  ],
+  "memory": [
+    {
+      "total_width": " 32 bits",
+      "ids": "IdoT1Omn0Va5QPpEmvv",
+      "memory_type": "DRAM",
+      "part_number": "",
+      "serial_number": "",
+      "host_ids": "59e030b755dc020240410421",
+      "data_width": " 32 bits",
+      "form_factor": "DIMM",
+      "type_detail": "EDO ",
+      "speed": 0,
+      "manufacturer": ""
+    }
+  ],
+  "netcard": [
+    {
+      "interface_index": 3,
+      "ids": "BzMkBtuHsW1y9bQXn1J",
+      "serial_number": "3e:17:38:78:b4:a7",
+      "host_ids": "59e030b755dc020240410421"
+    },
+    {
+      "interface_index": 2,
+      "ids": "McUq3KjTVyFYroSR0oo",
+      "serial_number": "00:0c:29:85:66:aa",
+      "host_ids": "59e030b755dc020240410421"
+    }
+  ],
+  "cpu": [
+    {
+      "current_voltage": " 3.3 V",
+      "max_clock_speed": 30000,
+      "processor_type": "Central Processor",
+      "serial_number": "",
+      "socket_designation": "CPU socket #0",
+      "manufacturer": "GenuineIntel",
+      "current_clock_speed": 3200,
+      "ext_clock": 0,
+      "ids": "I4I52MupJ0omsocs0SM",
+      "host_ids": "59e030b755dc020240410421",
+      "family": "Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz",
+      "architecture": "x86_64",
+      "status": "Enabled"
+    }
+  ],
+  "board": [
+    {
+      "product": "440BX Desktop Reference Platform",
+      "ids": "jvXWduTagnujTr96gdC",
+      "description": "None",
+      "serial_number": "",
+      "host_ids": "59e030b755dc020240410421",
+      "version": "None",
+      "manufacturer": "Intel Corporation"
+    }
+  ]
+}

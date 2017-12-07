@@ -1,0 +1,138 @@
+{
+  "cpu":{
+    "cpu_add":[
+      {
+        "current_voltage": " 3.3 V",
+        "max_clock_speed": 30000,
+        "processor_type": "Central Processor",
+        "serial_number": "",
+        "socket_designation": "CPU socket #0",
+        "manufacturer": "GenuineIntel",
+        "current_clock_speed": 3200,
+        "ext_clock": 0,
+        "ids": "I4I52MupJ0omsocs0SM",
+        "host_ids": "59e030b755dc020240410421",
+        "family": "Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz",
+        "architecture": "x86_64",
+        "status": "Enabled"
+      }
+    ],
+    "cpu_del":[
+      {
+        "current_voltage": " 3.3 V",
+        "max_clock_speed": 30000,
+        "processor_type": "Central Processor",
+        "serial_number": "",
+        "socket_designation": "CPU socket #0",
+        "manufacturer": "GenuineIntel",
+        "current_clock_speed": 3200,
+        "ext_clock": 0,
+        "ids": "I4I52MupJ0omsocs0SM",
+        "host_ids": "59e030b755dc020240410421",
+        "family": "Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz",
+        "architecture": "x86_64",
+        "status": "Enabled"
+      }
+    ]
+  },
+  "disk":{
+    "disk_add":[
+      {
+        "ids": "rICXM6rwSBVsUa89JcW",
+        "serial_number": "",
+        "model": "VMware Virtual S1.0 ",
+        "host_ids": "59e030b755dc020240410421",
+        "manufacturer": "VMware, VMware Virtual S1.0 "
+      }
+    ],
+    "disk_del":[
+      {
+        "ids": "rICXM6rwSBVsUa89JcW",
+        "serial_number": "",
+        "model": "VMware Virtual S1.0 ",
+        "host_ids": "59e030b755dc020240410421",
+        "manufacturer": "VMware, VMware Virtual S1.0 "
+      }
+    ]
+  },
+  "board":{
+    "board_add":[
+      {
+        "product": "440BX Desktop Reference Platform",
+        "ids": "jvXWduTagnujTr96gdC",
+        "description": "None",
+        "serial_number": "",
+        "host_ids": "59e030b755dc020240410421",
+        "version": "None",
+        "manufacturer": "Intel Corporation"
+      }
+    ],
+    "board_del":[
+      {
+        "product": "440BX Desktop Reference Platform",
+        "ids": "jvXWduTagnujTr96gdC",
+        "description": "None",
+        "serial_number": "",
+        "host_ids": "59e030b755dc020240410421",
+        "version": "None",
+        "manufacturer": "Intel Corporation"
+      }
+    ]
+  },
+  "memory":{
+    "memory_add":[
+      {
+        "total_width": " 32 bits",
+        "ids": "IdoT1Omn0Va5QPpEmvv",
+        "memory_type": "DRAM",
+        "part_number": "",
+        "serial_number": "",
+        "host_ids": "59e030b755dc020240410421",
+        "data_width": " 32 bits",
+        "form_factor": "DIMM",
+        "type_detail": "EDO ",
+        "speed": 0,
+        "manufacturer": ""
+      }
+    ],
+    "memory_del":[
+      {
+        "total_width": " 32 bits",
+        "ids": "IdoT1Omn0Va5QPpEmvv",
+        "memory_type": "DRAM",
+        "part_number": "",
+        "serial_number": "",
+        "host_ids": "59e030b755dc020240410421",
+        "data_width": " 32 bits",
+        "form_factor": "DIMM",
+        "type_detail": "EDO ",
+        "speed": 0,
+        "manufacturer": ""
+      }
+    ]
+  },
+  "netcard":{
+    "netcard_add":[
+      {
+        "interface_index": 3,
+        "ids": "BzMkBtuHsW1y9bQXn1J",
+        "serial_number": "3e:17:38:78:b4:a7",
+        "host_ids": "59e030b755dc020240410421"
+      },
+      {
+        "interface_index": 4,
+        "ids": "BzMkBtuHsW1y9bQXn1J",
+        "serial_number": "3e:17:38:78:b4:a7",
+        "host_ids": "59e030b755dc020240410421"
+      }
+    ],
+    "netcard_del":[
+      {
+        "interface_index": 2,
+        "ids": "BzMkBtuHsW1y9bQXn1J",
+        "serial_number": "3e:17:38:78:b4:a7",
+        "host_ids": "59e030b755dc020240410421"
+      }
+    ]
+  }
+}

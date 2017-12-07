@@ -1,0 +1,72 @@
+{
+  "add": [
+    {
+      "device_desc": "Standard Enhanced PCI to USB Host Controller",
+      "device_id": "PCI\\VEN_8086&DEV_9CA6&SUBSYS_069A1028&REV_03\\3&11583659&0&E8",
+      "device_type": 0,
+      "host_ids": "59ca391f9947e468e1817d7c",
+      "ids": "LvbawLH8vxQjG68edbw"
+    },
+    {
+      "device_desc": "符合 USB xHCI 的主机控制器",
+      "device_id": "PCI\\VEN_8086&DEV_9CB1&SUBSYS_069A1028&REV_03\\3&11583659&0&A0",
+      "device_type": 1,
+      "host_ids": "59ca391f9947e468e1817d7c",
+      "ids": "LvbawLH8vxQjG68edbw"
+    }
+  ],
+  "mod": [
+    {
+      "device_desc": "111Standard Enhanced PCI to USB Host Controller111",
+      "mod_desc": "222Standard Enhanced PCI to USB Host Controller222",
+      "device_id": "PCI\\VEN_8086&DEV_9CA6&SUBSYS_069A1028&REV_03\\3&11583659&0&E8",
+      "mod_id": "888PCI\\VEN_8086&DEV_9CB1&SUBSYS_069A1028&REV_03\\3&11583659&0&A0",
+      "device_type": 0,
+      "host_ids": "59ca391f9947e468e1817d7c",
+      "ids": "LvbawLH8vxQjG68edbw"
+    },
+    {
+      "device_desc": "符合 USB xHCI 的主机控制器111",
+      "mod_desc": "符合 USB xHCI 的主机控制器222",
+      "device_id": "PCI\\VEN_8086&DEV_9CB1&SUBSYS_069A1028&REV_03\\3&11583659&0&A0",
+      "mod_id": "666PCI\\VEN_8086&DEV_9CB1&SUBSYS_069A1028&REV_03\\3&11583659&0&A0",
+      "device_type": 1,
+      "host_ids": "59ca391f9947e468e1817d7c",
+      "ids": "LvbawLH8vxQjG68edbw"
+    },
+    {
+      "device_desc": "111Standard Enhanced PCI to USB Host Controller111",
+      "mod_desc": "222Standard Enhanced PCI to USB Host Controller222",
+      "device_id": "PCI\\VEN_8086&DEV_9CA6&SUBSYS_069A1028&REV_03\\3&11583659&0&E8",
+      "mod_id": "888PCI\\VEN_8086&DEV_9CB1&SUBSYS_069A1028&REV_03\\3&11583659&0&A0",
+      "device_type": 2,
+      "host_ids": "59ca391f9947e468e1817d7c",
+      "ids": "LvbawLH8vxQjG68edbw"
+    },
+    {
+      "device_desc": "符合 USB xHCI 的主机控制器111",
+      "mod_desc": "符合 USB xHCI 的主机控制器222",
+      "device_id": "PCI\\VEN_8086&DEV_9CB1&SUBSYS_069A1028&REV_03\\3&11583659&0&A0",
+      "mod_id": "666PCI\\VEN_8086&DEV_9CB1&SUBSYS_069A1028&REV_03\\3&11583659&0&A0",
+      "device_type": 3,
+      "host_ids": "59ca391f9947e468e1817d7c",
+      "ids": "LvbawLH8vxQjG68edbw"
+    }
+  ],
+  "del": [
+    {
+      "device_desc": "Standard Enhanced PCI to USB Host Controller",
+      "device_id": "PCI\\VEN_8086&DEV_9CA6&SUBSYS_069A1028&REV_03\\3&11583659&0&E8",
+      "device_type": 0,
+      "host_ids": "59ca391f9947e468e1817d7c",
+      "ids": "LvbawLH8vxQjG68edbw"
+    },
+    {
+      "device_desc": "符合 USB xHCI 的主机控制器",
+      "device_id": "PCI\\VEN_8086&DEV_9CB1&SUBSYS_069A1028&REV_03\\3&11583659&0&A0",
+      "device_type": 3,
+      "host_ids": "59ca391f9947e468e1817d7c",
+      "ids": "LvbawLH8vxQjG68edbw"
+    }
+  ]
+}

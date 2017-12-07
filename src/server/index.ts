@@ -69,6 +69,8 @@ export default class NodeServer{
 
     init(): void {
         this.app.use(bodyParser.json());
+        this.app.use(express.static("static"));
+        // this.app.use(express.static("view"));
         this.router.init()
         let server = this.app.listen(9090, function () {
             let host = server.address().address

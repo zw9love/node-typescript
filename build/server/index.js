@@ -55,6 +55,8 @@ var NodeServer = /** @class */ (function () {
     }
     NodeServer.prototype.init = function () {
         this.app.use(bodyParser.json());
+        this.app.use(express.static("static"));
+        // this.app.use(express.static("view"));
         this.router.init();
         var server = this.app.listen(9090, function () {
             var host = server.address().address;

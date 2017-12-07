@@ -35,7 +35,7 @@ var Service = /** @class */ (function () {
         }
         console.log(sql);
         this.dao.connectDatabase(sql, data, function (res) {
-            var json = index_3.getJson('', 200, res);
+            var json = index_3.getJson('成功', 200, res);
             if (successFn) {
                 successFn(json);
             }

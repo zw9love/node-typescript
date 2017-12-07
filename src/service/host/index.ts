@@ -22,16 +22,16 @@ import { getJson } from '../../util/index'
 // import util from '../../util/index'
 // let { getJson} = util
 
-interface json{
-    name?:string
-    ip?:string
-    port?:string
-    login_name?:string
-    login_pwd?:string
-    host_ids?:string
-    os_type?:string
-    os_version?:string
-    os_arch?:string
+interface json {
+    name?: string
+    ip?: string
+    port?: string
+    login_name?: string
+    login_pwd?: string
+    host_ids?: string
+    os_type?: string
+    os_version?: string
+    os_arch?: string
 }
 
 export default class Service {
@@ -54,7 +54,7 @@ export default class Service {
         }
         console.log(sql)
         this.dao.connectDatabase(sql, data, res => {
-            let json = getJson('', 200, res)
+            let json = getJson('成功', 200, res)
             if (successFn) { successFn(json) }
         }, errorFn)
     }

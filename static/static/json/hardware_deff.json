@@ -1,0 +1,152 @@
+{
+  "cpu":{
+    "add":[
+      {
+        "name": "my_test_cpu",
+        "value": "厂商名",
+        "web_key": "name"
+      }
+    ],
+    "mod":[
+      {
+        "serial":"BFEBFBFF000306D4",
+        "mod_serial":"666BFEBFBFF000306D4999",
+        "value": "序列号",
+        "web_key": "serial"
+      },
+      {
+        "id":"a123456789",
+        "mod_id":"b123456789",
+        "value": "ID号码",
+        "web_key": "id"
+      }
+    ],
+    "del":[
+      {
+        "code": "adadasdsadsadsadasdsad",
+        "value": "厂商码",
+        "web_key": "code"
+      }
+    ]
+  },
+  "disk":{
+    "add":[
+      {
+        "name": "my_test_disk",
+        "value": "厂商名",
+        "web_key": "name"
+      }
+    ],
+    "mod":[
+      {
+        "serial":"161657404311-20052242720C74911FA6",
+        "mod_serial":"aaa161657404311-20052242720C74911FA6bbb",
+        "value": "序列号",
+        "web_key": "serial"
+      },
+      {
+        "id":"a123456789",
+        "mod_id":"b123456789",
+        "value": "ID号码",
+        "web_key": "id"
+      }
+    ],
+    "del":[
+      {
+        "code": "adadasdsadsadsadasdsad",
+        "value": "厂商码",
+        "web_key": "code"
+      }
+    ]
+  },
+  "board":{
+    "add":[
+      {
+        "name": "my_test_board",
+        "value": "厂商名",
+        "web_key": "name"
+      }
+    ],
+    "mod":[
+      {
+        "serial":"CTFG1D2CN4864365N00B6",
+        "mod_serial":"111CTFG1D2CN4864365N00B6222",
+        "value": "序列号",
+        "web_key": "serial"
+      },
+      {
+        "id":"a123456789",
+        "mod_id":"b123456789",
+        "value": "ID号码",
+        "web_key": "id"
+      }
+    ],
+    "del":[
+      {
+        "code": "adadasdsadsadsadasdsad",
+        "value": "厂商码",
+        "web_key": "code"
+      }
+    ]
+  },
+  "memory":{
+    "add":[
+      {
+        "name": "my_test_mem",
+        "value": "厂商名",
+        "web_key": "name"
+      }
+    ],
+    "mod":[
+      {
+        "serial":"1173201E",
+        "mod_serial":"aaa1173201Ebbb",
+        "value": "序列号",
+        "web_key": "serial"
+      },
+      {
+        "id":"a123456789",
+        "mod_id":"b123456789",
+        "value": "ID号码",
+        "web_key": "id"
+      }
+    ],
+    "del":[
+      {
+        "code": "adadasdsadsadsadasdsad",
+        "value": "厂商码",
+        "web_key": "code"
+      }
+    ]
+  },
+  "netcard":{
+    "add":[
+      {
+        "name": "my_test_netcard",
+        "value": "厂商名",
+        "web_key": "name"
+      }
+    ],
+    "mod":[
+      {
+        "serial":"A925263A-9C2B-493E-A810-699DA7328D60",
+        "mod_serial":"888A925263A-9C2B-493E-A810-699DA7328D60999",
+        "value": "序列号",
+        "web_key": "serial"
+      },
+      {
+        "id":"a123456789",
+        "mod_id":"b123456789",
+        "value": "ID号码",
+        "web_key": "id"
+      }
+    ],
+    "del":[
+      {
+        "code": "adadasdsadsadsadasdsad",
+        "value": "厂商码",
+        "web_key": "code"
+      }
+    ]
+  }
+}

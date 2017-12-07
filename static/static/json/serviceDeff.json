@@ -1,0 +1,85 @@
+[
+  {
+    "add": [
+      {
+        "origin_s_status": "",
+        "s_fullpath": "C:\\WINDOWS\\system32\\svchost.exe -k netsvcs",
+        "s_startup_type": "3",
+        "s_des": "",
+        "ids": "",
+        "s_status": "SERVICE_STOPPED",
+        "origin_s_startup_type": "",
+        "host_ids": "59ca391f9947e468e1817d7c",
+        "s_name": "Windows Update",
+        "s_pid": ""
+      },
+      {
+        "origin_s_status": "",
+        "s_fullpath": "C:\\WINDOWS\\system32\\wbem\\WmiApSrv.exe",
+        "s_startup_type": "3",
+        "s_des": "",
+        "ids": "",
+        "s_status": "SERVICE_RUNNIN",
+        "origin_s_startup_type": "",
+        "host_ids": "59ca391f9947e468e1817d7c",
+        "s_name": "WMI Performance Adapter",
+        "s_pid": ""
+      }
+    ],
+    "mod": [
+      {
+        "origin_s_status": "",
+        "s_fullpath": "C:\\WINDOWS\\system32\\svchost.exe -k netsvcs",
+        "s_startup_type": "3",
+        "s_des": "",
+        "ids": "",
+        "s_status": "SERVICE_STOPPED",
+        "origin_s_startup_type": "",
+        "host_ids": "59ca391f9947e468e1817d7c",
+        "s_name": "Windows Update",
+        "mod_s_name": "Windows Update222",
+        "s_pid": ""
+      },
+      {
+        "origin_s_status": "",
+        "s_fullpath": "C:\\WINDOWS\\system32\\wbem\\WmiApSrv.exe",
+        "s_startup_type": "3",
+        "mod_s_startup_type": "2",
+        "s_des": "",
+        "ids": "",
+        "s_status": "SERVICE_RUNNIN",
+        "mod_s_status": "SERVICE_RUNNIN",
+        "origin_s_startup_type": "",
+        "host_ids": "59ca391f9947e468e1817d7c",
+        "s_name": "WMI Performance Adapter",
+        "s_pid": ""
+      }
+    ],
+    "del": [
+      {
+        "origin_s_status": "",
+        "s_fullpath": "C:\\WINDOWS\\System32\\svchost.exe -k wsappx",
+        "s_startup_type": "3",
+        "s_des": "",
+        "ids": "",
+        "s_status": "SERVICE_RUNNIN",
+        "origin_s_startup_type": "",
+        "host_ids": "59ca391f9947e468e1817d7c",
+        "s_name": "Client License Service (ClipSVC)",
+        "s_pid": ""
+      },
+      {
+        "origin_s_status": "",
+        "s_fullpath": "C:\\WINDOWS\\system32\\svchost.exe -k netsvcs",
+        "s_startup_type": "2",
+        "s_des": "",
+        "ids": "",
+        "s_status": "SERVICE_RUNNIN",
+        "origin_s_startup_type": "",
+        "host_ids": "59ca391f9947e468e1817d7c",
+        "s_name": "Group Policy Client",
+        "s_pid": ""
+      }
+    ]
+  }
+]
