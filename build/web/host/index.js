@@ -6,6 +6,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // let service = require('../../service/host/index')
 var index_1 = require("../../service/host/index");
+var role_1 = require("../../util/role");
+var index_2 = require("../../util/index");
 var Host = /** @class */ (function () {
     function Host() {
         this.service = new index_1.default();
@@ -16,8 +18,10 @@ var Host = /** @class */ (function () {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    Host.prototype.getData = function (host_ids, response, next) {
-        this.service.getData(host_ids, function (data) {
+    Host.prototype.getData = function (token, postData, response, next) {
+        if (!role_1.default.checkToken(token))
+            return response.send(JSON.stringify(index_2.getJson('用户登录失效', 611)));
+        this.service.getData(postData, function (data) {
             response.send(JSON.stringify(data));
         }, next);
     };
@@ -27,7 +31,9 @@ var Host = /** @class */ (function () {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    Host.prototype.deleteDataById = function (host_ids, response, next) {
+    Host.prototype.deleteDataById = function (token, host_ids, response, next) {
+        if (!role_1.default.checkToken(token))
+            return response.send(JSON.stringify(index_2.getJson('用户登录失效', 611)));
         this.service.deleteData(host_ids, function (data) {
             response.send(JSON.stringify(data));
         }, next);
@@ -38,7 +44,9 @@ var Host = /** @class */ (function () {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    Host.prototype.deleteDataBatch = function (idsArr, response, next) {
+    Host.prototype.deleteDataBatch = function (token, idsArr, response, next) {
+        if (!role_1.default.checkToken(token))
+            return response.send(JSON.stringify(index_2.getJson('用户登录失效', 611)));
         this.service.deleteData(idsArr, function (data) {
             response.send(JSON.stringify(data));
         }, next);
@@ -49,7 +57,9 @@ var Host = /** @class */ (function () {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    Host.prototype.upDateData = function (json, response, next) {
+    Host.prototype.upDateData = function (token, json, response, next) {
+        if (!role_1.default.checkToken(token))
+            return response.send(JSON.stringify(index_2.getJson('用户登录失效', 611)));
         this.service.upDateData(json, function (data) {
             response.send(JSON.stringify(data));
         }, next);
@@ -60,7 +70,9 @@ var Host = /** @class */ (function () {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    Host.prototype.addData = function (json, response, next) {
+    Host.prototype.addData = function (token, json, response, next) {
+        if (!role_1.default.checkToken(token))
+            return response.send(JSON.stringify(index_2.getJson('用户登录失效', 611)));
         this.service.addData(json, function (data) {
             response.send(JSON.stringify(data));
         }, next);

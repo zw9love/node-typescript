@@ -5,6 +5,9 @@
 
 // let service = require('../../service/host/index')
 import Service from '../../service/host/index'
+import { postData } from '../../interface/index'
+import Role from '../../util/role'
+import { getJson } from '../../util/index'
 
 interface response {
     send:Function
@@ -19,8 +22,9 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    getData(host_ids: null | string, response: response, next: Function): void{
-        this.service.getData(host_ids, data => {
+    getData(token:string, postData: postData, response: response, next: Function): void{
+        if (!Role.checkToken(token)) return response.send(JSON.stringify(getJson('用户登录失效', 611)));
+        this.service.getData(postData, data => {
             response.send(JSON.stringify(data));
         }, next)
     }
@@ -30,7 +34,8 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    deleteDataById(host_ids: string, response: response, next: Function): void {
+    deleteDataById(token: string, host_ids: string, response: response, next: Function): void {
+        if (!Role.checkToken(token)) return response.send(JSON.stringify(getJson('用户登录失效', 611)));
         this.service.deleteData(host_ids, data => {
             response.send(JSON.stringify(data));
         }, next)
@@ -41,7 +46,8 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    deleteDataBatch(idsArr: Array<string>, response: response, next: Function): void{
+    deleteDataBatch(token: string, idsArr: Array<string>, response: response, next: Function): void{
+        if (!Role.checkToken(token)) return response.send(JSON.stringify(getJson('用户登录失效', 611)));
         this.service.deleteData(idsArr, data => {
             response.send(JSON.stringify(data));
         }, next)
@@ -52,7 +58,8 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    upDateData(json, response: response, next: Function) :void{
+    upDateData(token: string, json, response: response, next: Function) :void{
+        if (!Role.checkToken(token)) return response.send(JSON.stringify(getJson('用户登录失效', 611)));
         this.service.upDateData(json, data => {
             response.send(JSON.stringify(data));
         }, next)
@@ -63,7 +70,8 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    addData(json, response: response, next: Function): void {
+    addData(token: string, json, response: response, next: Function): void {
+        if (!Role.checkToken(token)) return response.send(JSON.stringify(getJson('用户登录失效', 611)));
         this.service.addData(json, data => {
             response.send(JSON.stringify(data));
         }, next)

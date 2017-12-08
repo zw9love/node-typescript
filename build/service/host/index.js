@@ -25,21 +25,24 @@ var Service = /** @class */ (function () {
      * @param errorFn 失败执行的回调函数
      */
     Service.prototype.getData = function (data, successFn, errorFn) {
+        var _this = this;
+        // console.log(data)
         var host_ids = data;
         var sql = '';
-        if (host_ids === null || host_ids === undefined) {
-            sql = "SELECT * FROM " + this.tableName;
-        }
-        else {
-            sql = "SELECT * FROM " + this.tableName + " where host_ids = '" + host_ids + "'";
-        }
-        console.log(sql);
-        this.dao.connectDatabase(sql, data, function (res) {
-            var json = index_3.getJson('成功', 200, res);
-            if (successFn) {
-                successFn(json);
-            }
-        }, errorFn);
+        var page = data.page, row = data.row;
+        var select = "SELECT * FROM " + this.tableName + " ";
+        var count = "SELECT count(*) as sum FROM " + this.tableName + " ";
+        var where = '';
+        var limit = '';
+        index_3.checkPage({ row: row, where: where, page: page, limit: limit });
+        var tsData = [
+            { sql: count + where, dataArr: null },
+            { sql: select + where + limit, dataArr: null },
+        ];
+        // 开始事务
+        this.dao.connectTransaction(tsData, function (connection, res) {
+            index_3.beginTransaction({ connection: connection, res: res, page: page, successFn: successFn, dao: _this.dao });
+        });
     };
     /**
      * @description 删除 / 批量删除

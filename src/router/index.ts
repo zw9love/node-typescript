@@ -51,32 +51,45 @@ export default class Router {
         // host路由
         this.app.get('/host/delete/:ids', (request, response, next) => {
             let host_ids = request.params.ids || null
-            this.host.deleteDataById(host_ids, response, next)
+            let token = request.headers.token
+            this.host.deleteDataById(token,host_ids, response, next)
         })
 
         this.app.post('/host/get', (request, response, next) => {
-            let host_ids = request.body.host_ids || null
-            this.host.getData(host_ids, response, next)
+            // let host_ids = request.body
+            let token = request.headers.token
+            this.host.getData(token, request.body, response, next)
         })
 
         this.app.post('/host/delete', (request, response, next) => {
             let idsArr = request.body || []
-            this.host.deleteDataBatch(idsArr, response, next)
+            let token = request.headers.token
+            this.host.deleteDataBatch(token,idsArr, response, next)
         })
 
         this.app.post('/host/put', (request, response, next) => {
-            this.host.upDateData(request.body, response, next)
+            let token = request.headers.token
+            this.host.upDateData(token,request.body, response, next)
         })
 
         this.app.post('/host/post', (request, response, next) => {
             console.log(request.body)
-            this.host.addData(request.body, response, next)
+            let token = request.headers.token
+            this.host.addData(token,request.body, response, next)
         })
 
         // 拿到FormData上传的参数
         this.app.post('/upload', multipartMiddleware, function (request, response, next) {
             console.log(request.body, request.files)
         })
+
+        // 获取菜单
+        this.app.post('/menu/get', (request, response, next) => {
+            // console.log(request.headers.token)
+            let token = request.headers.token
+            this.login.getMenu(token, response, next)
+        })
+
 
         // 获取权限
         this.app.post('/role/getCur', (request, response, next) => {
@@ -125,6 +138,11 @@ export default class Router {
             console.log(request.url)
             response.writeHead(302, { 'Location': '/login' })
             response.end()
+        })
+
+        this.app.post('*', (request, response, next) => {
+            console.log(request.url)
+            next()
         })
     }
 }

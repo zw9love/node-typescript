@@ -12,7 +12,8 @@ import Dao from '../../dao/index'
 
 // 1、
 import { autoGetData } from '../../filters/index'
-import { getJson } from '../../util/index'
+import { getJson, beginTransaction, checkPage } from '../../util/index'
+import { postData } from '../../interface/index'
 
 // 2、
 // let { autoGetData } = require('../../filters/index')
@@ -44,19 +45,26 @@ export default class Service {
      * @param successFn  成功执行的回调函数
      * @param errorFn 失败执行的回调函数
      */
-    getData(data: null | string, successFn?: Function, errorFn?: Function): void {
+    getData(data: postData, successFn?: Function, errorFn?: Function): void {
+        // console.log(data)
         let host_ids = data
         let sql = ''
-        if (host_ids === null || host_ids === undefined) {
-            sql = `SELECT * FROM ${this.tableName}`;
-        } else {
-            sql = `SELECT * FROM ${this.tableName} where host_ids = '${host_ids}'`;
-        }
-        console.log(sql)
-        this.dao.connectDatabase(sql, data, res => {
-            let json = getJson('成功', 200, res)
-            if (successFn) { successFn(json) }
-        }, errorFn)
+        let { page, row } = data
+        let select = `SELECT * FROM ${this.tableName} `
+        let count = `SELECT count(*) as sum FROM ${this.tableName} `
+        let where = ''
+        let limit = ''
+        checkPage({ row, where, page, limit })
+
+        let tsData = [
+            { sql: count + where, dataArr: null },
+            { sql: select + where + limit, dataArr: null },
+        ]
+
+        // 开始事务
+        this.dao.connectTransaction(tsData, (connection, res) => {
+            beginTransaction({ connection, res, page, successFn, dao: this.dao})
+        })
     }
 
     /**

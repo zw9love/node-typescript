@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "start": "node build/index.js",
     "dev": "concurrently \"npm run watchTs\" \"npm run watchServer\"",
     "watchTs": "tsc",
@@ -15,15 +16,21 @@
   "dependencies": {
     "@types/node": "^8.0.54",
     "async": "^2.6.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
     "body-parser": "^1.18.2",
     "connect-multiparty": "^2.1.0",
+    "cross-env": "^5.1.1",
     "crypto": "^1.0.1",
     "express": "^4.16.2",
+    "json-loader": "^0.5.7",
     "mysql": "^2.15.0",
     "opn": "^5.1.0",
     "require": "^2.4.20",
+    "shelljs": "^0.7.8",
     "treeify": "^1.0.1",
     "util": "^0.10.3",
-    "uuid": "^3.1.0"
+    "uuid": "^3.1.0",
+    "webpack": "^3.10.0"
   }
 }

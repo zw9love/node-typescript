@@ -4,8 +4,8 @@
  * @since 2017/11/15
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-// let service = require('../../service/host/index')
 var index_1 = require("../../service/login/index");
+var role_1 = require("../../util/role");
 var index_2 = require("../../util/index");
 var Login = /** @class */ (function () {
     function Login() {
@@ -18,12 +18,10 @@ var Login = /** @class */ (function () {
      * @param next 向下执行方法
      */
     Login.prototype.checkLogin = function (json, response, next) {
-        var _this = this;
         this.service.checkLogin(json, function (data) {
             if (data.status === 200) {
-                var token = index_2.getToken();
-                _this.service.token = token;
-                response.header("token", token);
+                new role_1.default(); // 登录成功才生成Role对象
+                response.header("token", role_1.default.token);
             }
             response.send(JSON.stringify(data));
         }, next);
@@ -35,7 +33,22 @@ var Login = /** @class */ (function () {
      * @param next 向下执行方法
      */
     Login.prototype.checkRole = function (token, response, next) {
+        if (!role_1.default.checkToken(token))
+            return response.send(JSON.stringify(index_2.getJson('用户登录失效', 611)));
         this.service.checkRole(token, function (data) {
+            response.send(JSON.stringify(data));
+        }, next);
+    };
+    /**
+     * @description 获取菜单
+     * @param token 每次http请求的token值
+     * @param response 响应体
+     * @param next 向下执行方法
+     */
+    Login.prototype.getMenu = function (token, response, next) {
+        if (!role_1.default.checkToken(token))
+            return response.send(JSON.stringify(index_2.getJson('用户登录失效', 611)));
+        this.service.getMenu(function (data) {
             response.send(JSON.stringify(data));
         }, next);
     };

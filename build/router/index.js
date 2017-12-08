@@ -47,26 +47,37 @@ var Router = /** @class */ (function () {
         // host路由
         this.app.get('/host/delete/:ids', function (request, response, next) {
             var host_ids = request.params.ids || null;
-            _this.host.deleteDataById(host_ids, response, next);
+            var token = request.headers.token;
+            _this.host.deleteDataById(token, host_ids, response, next);
         });
         this.app.post('/host/get', function (request, response, next) {
-            var host_ids = request.body.host_ids || null;
-            _this.host.getData(host_ids, response, next);
+            // let host_ids = request.body
+            var token = request.headers.token;
+            _this.host.getData(token, request.body, response, next);
         });
         this.app.post('/host/delete', function (request, response, next) {
             var idsArr = request.body || [];
-            _this.host.deleteDataBatch(idsArr, response, next);
+            var token = request.headers.token;
+            _this.host.deleteDataBatch(token, idsArr, response, next);
         });
         this.app.post('/host/put', function (request, response, next) {
-            _this.host.upDateData(request.body, response, next);
+            var token = request.headers.token;
+            _this.host.upDateData(token, request.body, response, next);
         });
         this.app.post('/host/post', function (request, response, next) {
             console.log(request.body);
-            _this.host.addData(request.body, response, next);
+            var token = request.headers.token;
+            _this.host.addData(token, request.body, response, next);
         });
         // 拿到FormData上传的参数
         this.app.post('/upload', multipartMiddleware, function (request, response, next) {
             console.log(request.body, request.files);
+        });
+        // 获取菜单
+        this.app.post('/menu/get', function (request, response, next) {
+            // console.log(request.headers.token)
+            var token = request.headers.token;
+            _this.login.getMenu(token, response, next);
         });
         // 获取权限
         this.app.post('/role/getCur', function (request, response, next) {

@@ -16,6 +16,7 @@ var Dao = /** @class */ (function () {
             user: 'root',
             password: '159357',
         };
+        this.commitActive = true;
     }
     /**
      * @description 连接数据库
@@ -45,6 +46,7 @@ var Dao = /** @class */ (function () {
      * @param errorFn 失败执行的回调函数
      */
     Dao.prototype.connectTransaction = function (taskArr, successFn, errorFn) {
+        var _this = this;
         var connection = mysql.createConnection(this.databaseData);
         connection.connect();
         connection.beginTransaction(function (err) {
@@ -70,28 +72,6 @@ var Dao = /** @class */ (function () {
                 };
                 taskData.push(task);
             });
-            // var task1 = function (callback) {
-            //     connection.query(`UPDATE user SET money = money - 100 where name = 'zhangsan'`, function (err, result) {
-            //         if (err) {
-            //             console.log(err);
-            //             callback(err, null);
-            //             return;
-            //         }
-            //         console.log('第1次成功!');
-            //         callback(null, result);
-            //     })
-            // }
-            // var task2 = function (callback) {
-            //     connection.query(`UPDATE user SET money = money + 100 where name = lisi'`, function (err, result) {
-            //         if (err) {
-            //             console.log(err);
-            //             callback(err, null);
-            //             return;
-            //         }
-            //         console.log('第2次成功!');
-            //         callback(null, result);
-            //     })
-            // }
             async.series(taskData, function (err, result) {
                 if (err) {
                     console.log(err);
@@ -103,27 +83,32 @@ var Dao = /** @class */ (function () {
                     });
                     return;
                 }
-                var flag = true;
-                result.forEach(function (o) {
-                    if (o.affectedRows === 0) {
-                        flag = false;
-                    }
-                });
-                if (!flag) {
-                    connection.rollback(function () {
-                        console.log('出现错误,回滚!');
-                        //释放资源
-                        connection.end();
-                    });
-                    return;
-                }
+                if (successFn)
+                    successFn(connection, result);
+                // 判断受影响的条数
+                // let flag = true
+                // result.forEach(o => {
+                //     if (o.affectedRows === 0) {
+                //         flag = false
+                //     }
+                // })
+                // if (!flag) {
+                //     connection.rollback(function () {
+                //         console.log('出现错误,回滚!');
+                //         //释放资源
+                //         connection.end();
+                //     });
+                //     return;
+                // }
                 //提交
+                if (!_this.commitActive)
+                    return;
                 connection.commit(function (err) {
                     if (err) {
                         console.log(err);
                         return;
                     }
-                    console.log('成功,提交!');
+                    console.log('事务成功,提交!');
                     //释放资源
                     connection.end();
                 });
