@@ -5,7 +5,6 @@
 require('shelljs/global')
 var webpack = require('webpack');
 var path = require('path')
-var assetsSubDirectory = 'static'
 
 
 module.exports = {
@@ -44,18 +43,25 @@ module.exports = {
     ]
 }
 
+
 if (process.env.NODE_ENV === 'production') {
 
+    var assetsStatic = 'static'
+    var assetsView = 'view'
+
     /* 拼接编译输出文件路径 */
-    // var assetsPath = path.join(path.resolve(__dirname, './webapp/'), assetsSubDirectory)
-    var assetsPath = path.resolve(__dirname, './webapp/')
+    var root = path.resolve(__dirname, './webapp/')
+    var assetsStaticPath = path.join(path.resolve(__dirname, './webapp/'), assetsStatic)
+    var assetsViewPath = path.join(path.resolve(__dirname, './webapp/'), assetsView)
+    // var assetsPath = path.resolve(__dirname, './webapp/')
     /* 删除这个文件夹 （递归删除） */
-    rm('-rf', assetsPath)
+    rm('-rf', root)
     /* 创建此文件夹 */
-    mkdir('-p', assetsPath)
+    mkdir('-p', root)
     /* 复制 static 文件夹到我们的编译输出目录 */
-    cp('-R', 'static/*', assetsPath)
-    cp('-R', 'view/*', assetsPath)
+    cp('-R', 'static', root)
+    // console.log(assetsViewPath)
+    cp('-R', 'view', root)
 
     // '#source-map'
     module.exports.devtool = false
@@ -64,7 +70,7 @@ if (process.env.NODE_ENV === 'production') {
         publicPath: './',
         // filename: "/js/bundle.js"// 打包后输出文件的文件名
         // filename: path.posix.join(assetsSubDirectory, 'node/index.js')
-        filename: path.posix.join('node/index.js')
+        filename: path.posix.join('index.js')
     }
 
     module.exports.plugins = (module.exports.plugins || []).concat([
