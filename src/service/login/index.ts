@@ -5,8 +5,7 @@
 
 import Dao from '../../dao/index'
 import { autoGetData } from '../../filters/index'
-import { getJson } from '../../util/index'
-import Role from '../../util/role'
+import { getJson,getRandomString } from '../../util/index'
 
 
 interface json {
@@ -37,6 +36,7 @@ export default class Service {
     ]
 
     constructor() { }
+
     /**
      * @description 检查登录是否成功
      * @param data  登录的信息（账号密码）
@@ -48,31 +48,32 @@ export default class Service {
         this.dao.connectDatabase(sql, data, res => {
             let flag: boolean = false
             let userData = this.userData
+            let role: object = {}
             userData.forEach(e => {
-                if (e.login_name === data.login_name && e.login_pwd === data.login_pwd){
+                if (e.login_name === data.login_name && e.login_pwd === data.login_pwd) {
                     flag = true
-                    Role.role = e
+                    role = e
                 }
             })
-            let json: object = flag ? getJson('登录成功', 200, null) : getJson('用户名或密码错误', 606, null)
+
+            // 登录成功data
+            let loginSuccessData = {
+                role: role,
+                token: getRandomString(),
+                data: getJson('登录成功', 200, null),
+                status: 200
+            }
+
+            // 登录失败data
+            let loginfailData = {
+                role: role,
+                data: getJson('用户名或密码错误', 606, null),
+                status: 606
+            }
+
+            let json: object = flag ? loginSuccessData : loginfailData
             if (successFn) successFn(json)
         }, errorFn)
-    }
-    /**
-     * @description 查看是哪个管理员
-     * @param token  每次http请求的token值
-     * @param successFn  成功执行的回调函数
-     * @param errorFn 失败执行的回调函数
-     */
-    checkRole(token: string, successFn?: Function, errorFn?: Function) :void{
-        if (token === Role.token){
-            let data = {
-                zh_names: Role.role.username,
-                login_name: Role.role.login_name
-            }
-            let json = getJson('成功', 200, data)
-            if (successFn) successFn(json)
-        }
     }
 
     /**
@@ -81,7 +82,7 @@ export default class Service {
      * @param successFn 成功执行的回调函数
      * @param errorFn 失败执行的回调函数
      */
-    getMenu(successFn?: Function, errorFn?: Function): void{
+    getMenu(successFn?: Function, errorFn?: Function): void {
         let sql = `SELECT * FROM common_menu`
         this.dao.connectDatabase(sql, null, res => {
             let json = getJson('成功', 200, res)

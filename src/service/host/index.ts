@@ -47,7 +47,6 @@ export default class Service {
      */
     getData(data: postData, successFn?: Function, errorFn?: Function): void {
         // console.log(data)
-        let host_ids = data
         let sql = ''
         let { page, row } = data
         let select = `SELECT * FROM ${this.tableName} `
@@ -63,7 +62,7 @@ export default class Service {
 
         // 开始事务
         this.dao.connectTransaction(tsData, (connection, res) => {
-            beginTransaction({ connection, res, page, successFn, dao: this.dao})
+            beginTransaction({ connection, res, page:page ? page : {}, successFn, dao: this.dao})
         })
     }
 

@@ -22,8 +22,31 @@ interface rowPage {
     }
 }
 
+interface response {
+    send: Function
+    header: Function
+}
+
+interface request {
+    headers?:{
+        token?:string
+    }
+    session?: {
+        token?: string
+        role?: object
+        count?: number,
+        userData?:Array<{
+            token?: string
+            role?: object
+            count?: number,
+        }>
+    }
+}
+
 
 export {
     postData,
-    rowPage
+    rowPage,
+    response,
+    request,
 }

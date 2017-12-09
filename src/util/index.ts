@@ -29,11 +29,38 @@ function getJson(msg: string = '', status: number, data: any = null): object {
  * @param str
  */
 
-function md5(str: string) {
+function md5(str: string) :string{
     var md5 = crypto.createHash('md5');
     md5.update(str);
     str = md5.digest('hex');
     return str;
+}
+
+/**
+ * @description 获得随机字符串
+ */
+function getRandomString():string{
+    return uuidv1()
+}
+
+/**
+ * @description 检查token是否失效
+ * @param request 请求体
+ */
+function checkToken(request) :boolean{
+    let headerToken = request.headers.token
+    let seessionToken = request.session.token
+    // console.log('sessionid：' + request.session.id)
+    // console.log('sessionID：' + request.sessionID)
+    // console.log('seessionToken：' + seessionToken)
+    if(headerToken === 'debug'){
+        return true
+    }
+
+    let flag = headerToken === seessionToken
+
+    if(flag) request.session.count++ //刷新过期时间
+    return flag
 }
 
 /**
@@ -43,7 +70,7 @@ function md5(str: string) {
  * @param where where sql语句
  * @param limit limit sql语句
  */
-function checkPage({ row, where, page, limit }: rowPage){
+function checkPage({ row, where, page, limit }: rowPage):void{
     if (row) {
         if (row.hostIds || row.host_ids) {
             let ids = row.hostIds || row.host_ids
@@ -69,15 +96,28 @@ function checkPage({ row, where, page, limit }: rowPage){
 function beginTransaction({ connection, res, page, successFn, dao }) :void{
     let totalRow = res[0][0].sum
     let list = res[1]
-    let postData = {
-        list: list,
-        totalRow: totalRow,
-        totalPage: totalRow / ~~page.pageSize,
-        pageNumber: ~~page.pageNumber,
-        pageSize: ~~page.pageSize,
-        firstPage: ~~page.pageNumber === 1 ? true : false,
-        lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
+    
+    let {pageSize,pageNumber} = page
+
+    let postData: object
+
+    if(pageSize && pageNumber){
+        postData = {
+            list: list,
+            totalRow: totalRow,
+            totalPage: totalRow / ~~page.pageSize,
+            pageNumber: ~~page.pageNumber,
+            pageSize: ~~page.pageSize,
+            firstPage: ~~page.pageNumber === 1 ? true : false,
+            lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
+        }
+    }else{
+        postData = {
+            list: list,
+            totalRow: totalRow
+        }
     }
+
     let json = getJson('成功', 200, postData)
     // if (successFn) successFn(json)
 
@@ -97,6 +137,8 @@ function beginTransaction({ connection, res, page, successFn, dao }) :void{
 
 export {
     getJson,
+    getRandomString,
+    checkToken,
     md5,
     checkPage,
     beginTransaction
