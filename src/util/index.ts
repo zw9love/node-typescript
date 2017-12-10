@@ -5,15 +5,34 @@
 
 import crypto = require('crypto');  //加载加密文件
 import uuidv1 = require('uuid/v1');  //生成随机字符串
-import { rowPage } from "../interface/index";
+import {request} from "../interface/index";
 import Dao from "../dao/index";
+
 const dao = new Dao()
+
+
+/**
+ * @description checkPage方法体参数格式
+ */
+interface rowPage {
+    where: string
+    limit: string
+    page?: {
+        pageNumber?: number | string
+        pageSize?: number | string
+    }
+    row?: {
+        host_ids?: string
+        hostIds?: string
+    }
+}
+
 
 /**
  * @description 获取返回前台的json
- * @param msg 
- * @param status 
- * @param data 
+ * @param msg
+ * @param status
+ * @param data
  */
 function getJson(msg: string = '', status: number, data: any = null): object {
     let json = {
@@ -29,7 +48,7 @@ function getJson(msg: string = '', status: number, data: any = null): object {
  * @param str
  */
 
-function md5(str: string) :string{
+function md5(str: string): string {
     var md5 = crypto.createHash('md5');
     md5.update(str);
     str = md5.digest('hex');
@@ -39,7 +58,7 @@ function md5(str: string) :string{
 /**
  * @description 获得随机字符串
  */
-function getRandomString():string{
+function getRandomString(): string {
     return uuidv1()
 }
 
@@ -47,19 +66,15 @@ function getRandomString():string{
  * @description 检查token是否失效
  * @param request 请求体
  */
-function checkToken(request) :boolean{
+function checkToken(request: request): boolean {
     let headerToken = request.headers.token
-    let seessionToken = request.session.token
+    let sessionToken = request.session.token
     // console.log('sessionid：' + request.session.id)
     // console.log('sessionID：' + request.sessionID)
     // console.log('seessionToken：' + seessionToken)
-    if(headerToken === 'debug'){
-        return true
-    }
-
-    let flag = headerToken === seessionToken
-
-    if(flag) request.session.count++ //刷新过期时间
+    if (headerToken === 'debug') return true
+    let flag = headerToken === sessionToken
+    if (flag) request.session.count++ //刷新过期时间
     return flag
 }
 
@@ -70,7 +85,7 @@ function checkToken(request) :boolean{
  * @param where where sql语句
  * @param limit limit sql语句
  */
-function checkPage({ row, where, page, limit }: rowPage):void{
+function checkPage({row, where, page, limit}: rowPage): void {
     if (row) {
         if (row.hostIds || row.host_ids) {
             let ids = row.hostIds || row.host_ids
@@ -93,15 +108,15 @@ function checkPage({ row, where, page, limit }: rowPage):void{
  * @param dao dao对象
  */
 
-function beginTransaction({ connection, res, page, successFn, dao }) :void{
+function beginTransaction({connection, res, page, successFn, dao}: any): void {
     let totalRow = res[0][0].sum
     let list = res[1]
-    
-    let {pageSize,pageNumber} = page
+
+    let {pageSize, pageNumber} = page
 
     let postData: object
 
-    if(pageSize && pageNumber){
+    if (pageSize && pageNumber) {
         postData = {
             list: list,
             totalRow: totalRow,
@@ -111,13 +126,12 @@ function beginTransaction({ connection, res, page, successFn, dao }) :void{
             firstPage: ~~page.pageNumber === 1 ? true : false,
             lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
         }
-    }else{
+    } else {
         postData = {
             list: list,
             totalRow: totalRow
         }
     }
-
     let json = getJson('成功', 200, postData)
     // if (successFn) successFn(json)
 
@@ -125,7 +139,7 @@ function beginTransaction({ connection, res, page, successFn, dao }) :void{
     dao.commitActive = true
     if (successFn) successFn(json)
 
-    // 事务失败
+    // 事务失败(例如受影响的条数为0)
     // dao.commitActive = false
     // connection.rollback(o => {
     //     console.log('出现错误,回滚!');

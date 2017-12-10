@@ -1,3 +1,6 @@
+/**
+ * @description 分页格式
+ */
 interface postData {
     page?: {
         pageNumber?: number | string
@@ -7,35 +10,31 @@ interface postData {
         host_ids?: string
         hostIds?: string
     }
+    size?: {}
 }
 
-interface rowPage {
-    where: string
-    limit: string
-    page?: {
-        pageNumber?: number | string
-        pageSize?: number | string
-    }
-    row?: {
-        host_ids?: string
-        hostIds?: string
-    }
-}
 
+/**
+ * @description response响应体格式
+ */
 interface response {
     send: Function
     header: Function
 }
 
+
+/**
+ * @description request请求体格式
+ */
 interface request {
-    headers?:{
-        token?:string
+    headers?: {
+        token?: string
     }
     session?: {
         token?: string
         role?: object
         count?: number,
-        userData?:Array<{
+        userData?: Array<{
             token?: string
             role?: object
             count?: number,
@@ -43,10 +42,20 @@ interface request {
     }
 }
 
+/**
+ * @description 登录数据格式体
+ */
+interface loginData {
+    login_name: string
+    login_pwd: string
+    username?: string
+}
+
+
 
 export {
     postData,
-    rowPage,
     response,
     request,
+    loginData,
 }

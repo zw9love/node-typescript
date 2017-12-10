@@ -5,12 +5,9 @@
 
 // let service = require('../../service/host/index')
 import Service from '../../service/host/index'
-import { postData } from '../../interface/index'
+import { postData,response } from '../../interface/index'
 import { getJson } from '../../util/index'
 
-interface response {
-    send:Function
-}
 
 export default class Host {
     public service = new Service()

@@ -4,38 +4,20 @@
  */
 
 import Dao from '../../dao/index'
-import { autoGetData } from '../../filters/index'
-import { getJson,getRandomString } from '../../util/index'
-
-
-interface json {
-    name?: string
-    ip?: string
-    port?: string
-    login_name?: string
-    login_pwd?: string
-    host_ids?: string
-    os_type?: string
-    os_version?: string
-    os_arch?: string
-}
-
-interface loginData {
-    login_name: string
-    login_pwd: string
-    username?: string
-}
+import {getJson, getRandomString} from '../../util/index'
+import {loginData} from '../../interface/index'
 
 export default class Service {
     public dao = new Dao()
     private tableName: string = 'common_user'
     private userData: Array<loginData> = [
-        { login_name: 'sysadmin', login_pwd: 'admin123.com', username: '系统管理员' },
-        { login_name: 'audadmin', login_pwd: 'admin123.com', username: '审计管理员' },
-        { login_name: 'secadmin', login_pwd: 'admin123.com', username: '安全管理员' }
+        {login_name: 'sysadmin', login_pwd: 'admin123.com', username: '系统管理员'},
+        {login_name: 'audadmin', login_pwd: 'admin123.com', username: '审计管理员'},
+        {login_name: 'secadmin', login_pwd: 'admin123.com', username: '安全管理员'}
     ]
 
-    constructor() { }
+    constructor() {
+    }
 
     /**
      * @description 检查登录是否成功

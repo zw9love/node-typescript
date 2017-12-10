@@ -4,8 +4,6 @@
  */
 
 // ./不能忽略
-// let host = require('../web/host/index')
-// var multipart = require('connect-multiparty');
 import Host from '../web/host/index'
 import Login from '../web/login/index'
 import { checkToken, getJson } from '../util/index'
@@ -140,8 +138,8 @@ export default class Router {
             response.end()
         })
 
+        // 捕获所有的除了上述路由之外的post请求
         this.app.post('*', (request, response, next) => {
-            // if (!checkToken(request)) return getJson('用户登录失效', 611, null)
             console.log(request.url)
             next()
         })

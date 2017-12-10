@@ -7,7 +7,9 @@
 import mysql = require('mysql')
 import async = require('async');
 
-// 接口
+/**
+ * @description 事务data参数格式体
+ */
 interface dataJson {
     sql: string
     dataArr: Array<string>
@@ -92,6 +94,7 @@ export default class Dao {
             async.series(taskData, (err, result) => {
                 if (err) {
                     console.log(err);
+                    if(errorFn) errorFn()
                     //回滚
                     connection.rollback(function () {
                         console.log('出现错误,回滚!');
