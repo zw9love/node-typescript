@@ -53,12 +53,9 @@ module.exports = {
     ]
 }
 
-
 if (process.env.NODE_ENV === 'production') {
-
     var assetsStatic = 'static'
     var assetsView = 'view'
-
     /* 拼接编译输出文件路径 */
     var root = path.resolve(__dirname, './webapp/')
     var assetsStaticPath = path.join(path.resolve(__dirname, './webapp/'), assetsStatic)
@@ -72,7 +69,7 @@ if (process.env.NODE_ENV === 'production') {
     cp('-R', 'static', root)
     // console.log(assetsViewPath)
     cp('-R', 'view', root)
-
+    cp('-R', 'src/dao/config.json', root)
     // '#source-map'
     module.exports.devtool = false
     module.exports.output = {

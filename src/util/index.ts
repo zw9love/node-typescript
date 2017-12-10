@@ -6,10 +6,6 @@
 import crypto = require('crypto');  //加载加密文件
 import uuidv1 = require('uuid/v1');  //生成随机字符串
 import {request} from "../interface/index";
-import Dao from "../dao/index";
-
-const dao = new Dao()
-
 
 /**
  * @description checkPage方法体参数格式

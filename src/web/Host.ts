@@ -4,21 +4,22 @@
  */
 
 // let service = require('../../service/host/index')
-import Service from '../../service/host/index'
-import { postData,response } from '../../interface/index'
-import { getJson } from '../../util/index'
+import Service from '../service/Host'
+import { postData, response } from '../interface/index'
+import { getJson } from '../util/index'
 
 
 export default class Host {
     public service = new Service()
-    constructor() { }
+    constructor() {
+    }
     /**
      * @description 获取数据
      * @param host_ids 主机ids
      * @param response 响应体
      * @param next 向下执行方法
      */
-    getData(postData: postData, response: response, next: Function): void{
+    getData(postData: postData, response: response, next: Function): void {
         this.service.getData(postData, data => {
             // console.log(data)
             response.send(JSON.stringify(data));
@@ -41,7 +42,7 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    deleteDataBatch(idsArr: Array<string>, response: response, next: Function): void{
+    deleteDataBatch(idsArr: Array<string>, response: response, next: Function): void {
         this.service.deleteData(idsArr, data => {
             response.send(JSON.stringify(data));
         }, next)
@@ -52,7 +53,7 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    upDateData(json, response: response, next: Function) :void{
+    upDateData(json, response: response, next: Function): void {
         this.service.upDateData(json, data => {
             response.send(JSON.stringify(data));
         }, next)

@@ -8,12 +8,12 @@
     exports 是指向的 module.exports 的引用
     require() 返回的是 module.exports 而不是 exports
 */
-import Dao from '../../dao/index'
+import Dao from '../dao/index'
 
 // 1、
-import {autoGetData} from '../../filters/index'
-import {getJson, beginTransaction, checkPage} from '../../util/index'
-import {postData} from '../../interface/index'
+import {autoGetData} from '../filters/index'
+import {getJson, beginTransaction, checkPage} from '../util/index'
+import {postData} from '../interface/index'
 
 // 2、
 // let { autoGetData } = require('../../filters/index')

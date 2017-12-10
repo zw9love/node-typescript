@@ -4,8 +4,8 @@
  */
 
 // ./不能忽略
-import Host from '../web/host/index'
-import Login from '../web/login/index'
+import Host from '../web/Host'
+import Login from '../web/Login'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -16,8 +16,8 @@ var multipartMiddleware = multipart()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 export default class Router {
-    public host = new Host()
-    public login = new Login()
+    public host:Host = new Host()
+    public login:Login  = new Login()
     public app: any
     private loginActive: boolean = false
     constructor(app: any) {
@@ -40,6 +40,7 @@ export default class Router {
 
         // login路由
         this.app.post('/login/dologin', urlencodedParser, (request, response, next) => {
+            // if(!this.login) this.login = new Login() // 判断Login对象是否存在 不存在才生成
             this.login.checkLogin(request.body, request, response, next)
         })
 

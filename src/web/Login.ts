@@ -3,7 +3,7 @@
  * @since 2017/11/15
  */
 
-import Service from '../service/login/index'
+import Service from '../service/Login'
 import {request, response, loginData} from '../interface/index'
 
 export default class Login {

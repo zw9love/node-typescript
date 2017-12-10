@@ -6,6 +6,9 @@
 // let mysql = require('mysql');
 import mysql = require('mysql')
 import async = require('async');
+const databaseData = require('./config.json')
+
+// console.log(database)
 
 /**
  * @description 事务data参数格式体
@@ -17,17 +20,15 @@ interface dataJson {
 
 export default class Dao {
 
-    public databaseData: object = {
-        host: 'localhost',
-        port: '3306',
-        database: 'beeeyehced',
-        user: 'root',
-        password: '159357',
-    }
+    public databaseData: object
 
     public commitActive: boolean = true
 
-    constructor() { }
+    constructor() {
+        // console.log('Dao对象初始化')
+        this.databaseData = databaseData
+    }
+
     /**
      * @description 连接数据库
      * @param sql sql语句
@@ -53,6 +54,7 @@ export default class Dao {
         connection.end();
 
     }
+
     /**
      * @description 数据库事务管理
      * @param taskArr 多个任务执行
@@ -94,7 +96,7 @@ export default class Dao {
             async.series(taskData, (err, result) => {
                 if (err) {
                     console.log(err);
-                    if(errorFn) errorFn()
+                    if (errorFn) errorFn()
                     //回滚
                     connection.rollback(function () {
                         console.log('出现错误,回滚!');
