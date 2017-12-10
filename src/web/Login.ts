@@ -3,9 +3,8 @@
  * @since 2017/11/15
  */
 
-import Service from '../../service/login/index'
-import { getJson } from '../../util/index'
-import { request, response, loginData } from '../../interface/index'
+import Service from '../service/login/index'
+import {request, response, loginData} from '../interface/index'
 
 export default class Login {
     public service = new Service()
