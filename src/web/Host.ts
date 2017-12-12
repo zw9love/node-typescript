@@ -70,4 +70,14 @@ export default class Host {
         }, next)
     }
 
+    /**
+     * @description 添加数据
+     * @param data web层传递数据
+     * @param response 响应体
+     * @param next 向下执行方法
+     */
+    getSystems(data: object, response: response, next: Function): void {
+        response.send(JSON.stringify(getJson('成功', 200, null)));
+    }
+
 }

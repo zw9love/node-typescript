@@ -6,6 +6,7 @@
 // ./不能忽略
 import Host from '../web/Host'
 import Login from '../web/Login'
+import Setting from '../web/Setting'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -18,6 +19,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 export default class Router {
     public host:Host = new Host()
     public login:Login  = new Login()
+    public setting: Setting = new Setting()
     public app: any
     private loginActive: boolean = false
     constructor(app: any) {
@@ -51,22 +53,32 @@ export default class Router {
             this.host.deleteDataById(host_ids, response, next)
         })
 
+        // 获取文件系统信息
+        this.app.post('/host/getSystems', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            this.host.getSystems(request.body, response, next)
+        })
+
+        // 获取主机
         this.app.post('/host/get', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             this.host.getData(request.body, response, next)
         })
 
+        // 删除主机
         this.app.post('/host/delete', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             let idsArr = request.body || []
             this.host.deleteDataBatch(idsArr, response, next)
         })
 
+        // 修改主机
         this.app.post('/host/put', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             this.host.upDateData(request.body, response, next)
         })
 
+        // 添加主机
         this.app.post('/host/post', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             console.log(request.body)

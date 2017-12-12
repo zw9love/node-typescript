@@ -4,24 +4,18 @@
  */
 
 /* 原生起 */
-
 // let http = require("http"); 
-
 // http.createServer(function(request, response) { 
-
 //     response.writeHead(200, {"Content-Type": "application/json;charset=UTF-8", "Access-Control-Allow-Origin": "*"}); 
-
 //     let json = {
 //         "name": "大熊",
 //         "sex": "男",
 //         "age": 20
 //     }
-
 //     response.write(JSON.stringify(json)); 
-
 //     response.end(); 
-
 // }).listen(9090);
+
 
 // import express = require('express')
 // import bodyParser = require('body-parser')
