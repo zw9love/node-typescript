@@ -34,11 +34,14 @@ export default class Router {
             res.header("Access-Control-Allow-Origin", "*"); //设置允许客户端跨域请求
             res.header("Content-Type", "application/json;charset=UTF-8"); //设置响应头数据类型
             next();
-        });
+        })
 
-        /**
-         * 路由块
-         */
+        this.app.post('/setting/get', urlencodedParser, (request, response, next) => {
+            // if(!this.login) this.login = new Login() // 判断Login对象是否存在 不存在才生成
+            // this.login.checkLogin(request.body, request, response, next)
+            this.setting.getData(request.body, response, next)
+        })
+
 
         // login路由
         this.app.post('/login/dologin', urlencodedParser, (request, response, next) => {
@@ -46,7 +49,7 @@ export default class Router {
             this.login.checkLogin(request.body, request, response, next)
         })
 
-        // host路由
+        // 根据ids删除
         this.app.get('/host/delete/:ids', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             let host_ids = request.params.ids || null
