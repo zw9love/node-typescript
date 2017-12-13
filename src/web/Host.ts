@@ -25,6 +25,19 @@ export default class Host {
             response.send(JSON.stringify(data));
         }, next)
     }
+    
+    /**
+     * @description 通过ids来获取单个主机
+     * @param hostIds 主机ids
+     * @param response 响应体
+     * @param next 向下执行方法
+     */
+    getDataById(hostIds: string, response: response, next: Function): void {
+        this.service.getDataById(hostIds, data => {
+            response.send(JSON.stringify(data));
+        }, next)
+    }
+
     /**
      * @description 根据主机ids删除数据
      * @param host_ids 主机ids
@@ -53,7 +66,7 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    upDateData(json, response: response, next: Function): void {
+    upDateData(json: object, response: response, next: Function): void {
         this.service.upDateData(json, data => {
             response.send(JSON.stringify(data));
         }, next)
@@ -64,20 +77,22 @@ export default class Host {
      * @param response 响应体
      * @param next 向下执行方法
      */
-    addData(json, response: response, next: Function): void {
+    addData(json: object, response: response, next: Function): void {
         this.service.addData(json, data => {
             response.send(JSON.stringify(data));
         }, next)
     }
 
     /**
-     * @description 添加数据
+     * @description 获取操作系统数据
      * @param data web层传递数据
      * @param response 响应体
      * @param next 向下执行方法
      */
     getSystems(data: object, response: response, next: Function): void {
-        response.send(JSON.stringify(getJson('成功', 200, null)));
+        this.service.getSystems(data, res => {
+            response.send(JSON.stringify(getJson('成功', 200, res)))
+        }, next)
     }
 
 }

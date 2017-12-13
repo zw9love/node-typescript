@@ -14,7 +14,7 @@ import bodyParser = require('body-parser')
 import fs = require("fs")
 
 var multipartMiddleware = multipart()
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+var urlencodedParser = bodyParser.urlencoded({ extended: false }) // 如果前台传递的类型是Form Data类型的数据
 
 export default class Router {
     public host:Host = new Host()
@@ -36,24 +36,22 @@ export default class Router {
             next();
         })
 
-        this.app.post('/setting/get', urlencodedParser, (request, response, next) => {
-            // if(!this.login) this.login = new Login() // 判断Login对象是否存在 不存在才生成
-            // this.login.checkLogin(request.body, request, response, next)
+        // 获取系统设置项
+        this.app.post('/setting/get', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             this.setting.getData(request.body, response, next)
         })
 
+        // 获取管理员上次登录信息
+        this.app.post('/limit/lastLoginTime', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            this.setting.getLoginInfo(request.body, response, next)
+        })
 
         // login路由
         this.app.post('/login/dologin', urlencodedParser, (request, response, next) => {
             // if(!this.login) this.login = new Login() // 判断Login对象是否存在 不存在才生成
             this.login.checkLogin(request.body, request, response, next)
-        })
-
-        // 根据ids删除
-        this.app.get('/host/delete/:ids', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            let host_ids = request.params.ids || null
-            this.host.deleteDataById(host_ids, response, next)
         })
 
         // 获取文件系统信息
@@ -68,7 +66,21 @@ export default class Router {
             this.host.getData(request.body, response, next)
         })
 
-        // 删除主机
+        // 通过获取主机
+        this.app.post('/host/get/:ids', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            let host_ids = request.params.ids || null
+            this.host.getDataById(host_ids, response, next)
+        })
+
+        // 根据ids删除主机
+        this.app.post('/host/delete/:ids', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            let host_ids = request.params.ids || null
+            this.host.deleteDataById(host_ids, response, next)
+        })
+
+        // 批量删除主机
         this.app.post('/host/delete', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             let idsArr = request.body || []
@@ -156,7 +168,7 @@ export default class Router {
 
         // 捕获所有的除了上述路由之外的post请求
         this.app.post('*', (request, response, next) => {
-            console.log(request.url)
+            console.log('post请求：' + request.url)
             next()
         })
     }

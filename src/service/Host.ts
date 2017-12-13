@@ -9,12 +9,12 @@
     require() 返回的是 module.exports 而不是 exports
 */
 import Dao from '../dao/index'
-
 // 1、
-import {autoGetData} from '../filters/index'
-import {getJson, beginTransaction, checkPage} from '../util/index'
-import {postData} from '../interface/index'
-
+import { autoGetData } from '../filters/index'
+import { getJson, beginTransaction, checkPage, getRandomString, md5 } from '../util/index'
+import { postData } from '../interface/index'
+import os = require('os')
+import fs = require('fs')
 // 2、
 // let { autoGetData } = require('../../filters/index')
 // let { getJson } = require('../../util/index')
@@ -52,14 +52,14 @@ export default class Service {
      * @param errorFn 失败执行的回调函数
      */
     getData(data: postData, successFn?: Function, errorFn?: Function): void {
-        let {page, row, size} = data
+        let { page, row, size } = data
         let select = `SELECT * FROM ${this.tableName} `
         let count = `SELECT count(*) as sum FROM ${this.tableName} `
         let where = ''
         let limit = ''
         // 分页存在
         if (page) {
-            checkPage({row, where, page, limit})
+            checkPage({ row, where, page, limit })
         }
         else if (size) {
 
@@ -67,13 +67,29 @@ export default class Service {
         // 如果分页不存在
 
         let tsData = [
-            {sql: count + where, dataArr: null},
-            {sql: select + where + limit, dataArr: null},
+            { sql: count + where, dataArr: null },
+            { sql: select + where + limit, dataArr: null },
         ]
 
         // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
         this.dao.connectTransaction(tsData, (connection, res) => {
-            beginTransaction({connection, res, page: page ? page : {}, successFn, dao: this.dao})
+            beginTransaction({ connection, res, page: page ? page : {}, successFn, dao: this.dao })
+        }, errorFn)
+    }
+
+    /**
+     * @description 通过ids来获取单个主机
+     * @param hostIds 主机ids
+     * @param successFn 成功执行的回调函数
+     * @param errorFn 失败执行的回调函数
+     */
+    getDataById(hostIds: string, successFn?: Function, errorFn?: Function): void {
+        let select = `SELECT * FROM ${this.tableName} `
+        let where = `where host_ids = ? `
+        let sql = select + where
+        this.dao.connectDatabase(sql, hostIds, res => {
+            let json = getJson('成功', 200, res[0])
+            if (successFn) successFn(json)
         }, errorFn)
     }
 
@@ -86,16 +102,17 @@ export default class Service {
 
     deleteData(idsArr: string | Array<string>, successFn?: Function, errorFn?: Function): void {
         let sql = idsArr.length >= 0 ? `DELETE FROM ${this.tableName} where host_ids in (?)` : `DELETE FROM ${this.tableName} where host_ids = ?`;
-        this.dao.connectDatabase(sql, idsArr, ({affectedRows}) => {
-            let json
-            if (affectedRows > 0) {
-                json = getJson('删除成功', 200)
-            } else {
-                json = getJson('删除失败', 404)
-            }
-            if (successFn) {
-                successFn(json)
-            }
+        let moduleSql = 'DELETE FROM beeneedle_module where host_ids = ?'
+
+        let taskArr = [
+            { sql: sql, dataArr: idsArr },
+            { sql: moduleSql, dataArr: idsArr },
+        ]
+        // 开启事务方法 删除主机的同时，删除主机模块数据
+        this.dao.connectTransaction(taskArr, (connection, res) => {
+            let affectedRows = res[0].affectedRows
+            let json = affectedRows > 0 ? getJson('删除成功', 200) : getJson('删除失败', 404)
+            if (successFn) successFn(json)
         }, errorFn)
     }
 
@@ -108,17 +125,10 @@ export default class Service {
 
     upDateData(json: json, successFn?: Function, errorFn?: Function): void {
         let sql = `UPDATE ${this.tableName} SET name = ?, ip = ?, port = ?,login_name = ?,login_pwd = ? where host_ids = ?`;
-        let arr = [json.name, json.ip, json.port, json.login_name, json.login_pwd, json.host_ids]
-        this.dao.connectDatabase(sql, json, ({affectedRows}) => {
-            let json
-            if (affectedRows > 0) {
-                json = getJson('修改成功', 200)
-            } else {
-                json = getJson('修改失败', 404)
-            }
-            if (successFn) {
-                successFn(json)
-            }
+        let arr = [json.name, json.ip, json.port, json.login_name, md5(json.login_pwd), json.host_ids]
+        this.dao.connectDatabase(sql, arr, ({ affectedRows }) => {
+            let json = affectedRows > 0 ? getJson('修改成功', 200) : getJson('修改失败', 404)
+            if (successFn) successFn(json)
         }, errorFn)
     }
 
@@ -130,18 +140,84 @@ export default class Service {
      */
 
     addData(json: json, successFn?: Function, errorFn?: Function): void {
-        let sql = `INSERT INTO ${this.tableName} (host_ids, name, ip, port, os_type, os_version, os_arch, login_name, login_pwd) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        let arr = [json.host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), autoGetData(json.login_pwd)]
-        this.dao.connectDatabase(sql, json, ({affectedRows}) => {
-            let json
-            if (affectedRows > 0) {
-                json = getJson('添加成功', 200)
-            } else {
-                json = getJson('添加失败', 404)
-            }
-            if (successFn) {
-                successFn(json)
-            }
+        let sql = `INSERT INTO ${this.tableName} (host_ids, name, ip, port, os_type, os_version, os_arch, login_name, login_pwd, status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        let host_ids = getRandomString()
+        let arr = [host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), md5(json.login_pwd), 0]
+        // console.log(sql)
+        let moduleSql = `INSERT INTO beeneedle_module (ids, host_ids, type, status) VALUES `
+        for (let i = 0; i <= 6; i++) {
+            let str = i == 6 ? `('${getRandomString()}', '${host_ids}', ${i}, 0)` : `('${getRandomString()}', '${host_ids}', ${i}, 0),`
+            moduleSql += str
+        }
+        let taskArr = [
+            { sql: sql, dataArr: arr },
+            { sql: moduleSql, dataArr: null },
+        ]
+        // 开启事务方法 添加主机的同时初始化主机模块数据
+        this.dao.connectTransaction(taskArr, (connection, res) => {
+            let affectedRows = res[0].affectedRows
+            let json = affectedRows > 0 ? getJson('添加成功', 200) : getJson('添加失败', 404)
+            if (successFn) successFn(json)
         }, errorFn)
     }
+
+    /**
+     * @description 处理数据，本类私有方法
+     * @param fileData 读取文件夹系统数组
+     */
+    private handleData(fileData: Array<string>): object {
+        let postData = [
+            { name: 'linux', version: [] },
+            { name: 'windows', version: [] },
+        ]
+        fileData.forEach(o => {
+            let arr = o.split('-').slice(1)
+            postData.forEach(e => {
+                if (arr[0] === e.name) {
+                    if (e.version.length === 0) {
+                        let obj = {
+                            value: arr[1],
+                            arch: [arr[2]]
+                        }
+                        e.version.push(obj)
+                    } else {
+                        let flag = true
+                        for (let val of e.version) {
+                            if (arr[1] === val.value) {
+                                val.arch.push(arr[2])
+                                flag = false
+                            }
+                        }
+
+                        if (flag) {
+                            let obj = {
+                                value: arr[1],
+                                arch: [arr[2]]
+                            }
+                            e.version.push(obj)
+                        }
+                    }
+                }
+            })
+        })
+        return postData
+    }
+
+    /**
+     * @description 获取操作系统数据
+     * @param json  sql语句参数
+     * @param successFn  成功执行的回调函数
+     * @param errorFn 失败执行的回调函数
+     */
+    getSystems(data: object, successFn?: Function, errorFn?: Function): void {
+        // 根据操作系统的不同拿到不同的路径
+        let path = os.platform().toLowerCase().search('win') === -1 ? '/usr/local/share/lpdata/client/' : 'C:/systems'
+        fs.readdir(path, (err, data) => {
+            if (err) return console.error(err);
+            // console.log("异步读取: " + data.toString());
+            let postData = this.handleData(data)
+            if (successFn) successFn(postData)
+        })
+    }
+
 }

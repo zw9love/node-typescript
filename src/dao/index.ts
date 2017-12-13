@@ -15,7 +15,7 @@ const databaseData = require('./config.json')
  */
 interface dataJson {
     sql: string
-    dataArr: Array<string>
+    dataArr: Array<string> | string
 }
 
 export default class Dao {

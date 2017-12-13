@@ -123,10 +123,11 @@ function beginTransaction({connection, res, page, successFn, dao}: any): void {
             lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
         }
     } else {
-        postData = {
-            list: list,
-            totalRow: totalRow
-        }
+        postData = list
+        // {
+        //     list: list,
+        //     totalRow: totalRow
+        // }
     }
     let json = getJson('成功', 200, postData)
     // if (successFn) successFn(json)
