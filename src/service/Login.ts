@@ -4,16 +4,16 @@
  */
 
 import Dao from '../dao/index'
-import {getJson, getRandomString} from '../util/index'
-import {loginData} from '../interface/index'
+import { getJson, getRandomString } from '../util/index'
+import { loginData } from '../interface/index'
 
 export default class Service {
     public dao = new Dao()
     private tableName: string = 'common_user'
     private userData: Array<loginData> = [
-        {login_name: 'sysadmin', login_pwd: 'admin123.com', username: '系统管理员'},
-        {login_name: 'audadmin', login_pwd: 'admin123.com', username: '审计管理员'},
-        {login_name: 'secadmin', login_pwd: 'admin123.com', username: '安全管理员'}
+        { login_name: 'sysadmin', login_pwd: 'admin123.com', username: '系统管理员', ids: '57b2aa524a7e85b9a1a3cb0f' },
+        { login_name: 'audadmin', login_pwd: 'admin123.com', username: '审计管理员', ids: '57b2aa524a7e85b9a1a3cb11' },
+        { login_name: 'secadmin', login_pwd: 'admin123.com', username: '安全管理员', ids: '57b2aa524a7e85b9a1a3cb12' }
     ]
 
     constructor() {

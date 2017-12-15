@@ -5,7 +5,8 @@
 
 import crypto = require('crypto');  //加载加密文件
 import uuidv1 = require('uuid/v1');  //生成随机字符串
-import {request} from "../interface/index";
+import { request } from "../interface/index";
+const key = 'zengwei'
 
 /**
  * @description checkPage方法体参数格式
@@ -41,15 +42,35 @@ function getJson(msg: string = '', status: number, data: any = null): object {
 
 /**
  * @description md5加密
- * @param str
+ * @param str 需要加密数据
+ * @returns {string} 返回加密字符串
  */
 
-function md5(str: string): string {
-    var md5 = crypto.createHash('md5');
-    md5.update(str);
-    str = md5.digest('hex');
-    return str;
+function aesEncrypt(str: string): string {
+    const cipher = crypto.createCipher('aes192', key);
+    var crypted = cipher.update(str, 'utf8', 'hex');
+    crypted += cipher.final('hex');
+    return crypted;
+
+    // var md5 = crypto.createHash('md5', key);
+    // md5.update(str);
+    // str = md5.digest('hex');
+    // return str;
 }
+
+/**
+ * @description md5解密
+ * @param data 需要解密md5数据
+ * @returns {string} 返回解密字符串
+ */
+function aesDecrypt(md5: string): string {
+    const decipher = crypto.createDecipher('aes192', key);
+    var decrypted = decipher.update(md5, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted
+}
+
+
 
 /**
  * @description 获得随机字符串
@@ -81,7 +102,7 @@ function checkToken(request: request): boolean {
  * @param where where sql语句
  * @param limit limit sql语句
  */
-function checkPage({row, where, page, limit}: rowPage): void {
+function checkPage({ row, where, page, limit }: rowPage): void {
     if (row) {
         if (row.hostIds || row.host_ids) {
             let ids = row.hostIds || row.host_ids
@@ -104,11 +125,11 @@ function checkPage({row, where, page, limit}: rowPage): void {
  * @param dao dao对象
  */
 
-function beginTransaction({connection, res, page, successFn, dao}: any): void {
+function beginTransaction({ connection, res, page, successFn, dao }: any): void {
     let totalRow = res[0][0].sum
     let list = res[1]
 
-    let {pageSize, pageNumber} = page
+    let { pageSize, pageNumber } = page
 
     let postData: object
 
@@ -150,7 +171,8 @@ export {
     getJson,
     getRandomString,
     checkToken,
-    md5,
+    aesEncrypt,
+    aesDecrypt,
     checkPage,
     beginTransaction
 }

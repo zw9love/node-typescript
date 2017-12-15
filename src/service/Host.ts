@@ -11,7 +11,7 @@
 import Dao from '../dao/index'
 // 1、
 import { autoGetData } from '../filters/index'
-import { getJson, beginTransaction, checkPage, getRandomString, md5 } from '../util/index'
+import { getJson, beginTransaction, checkPage, getRandomString, aesEncrypt } from '../util/index'
 import { postData } from '../interface/index'
 import os = require('os')
 import fs = require('fs')
@@ -125,7 +125,7 @@ export default class Service {
 
     upDateData(json: json, successFn?: Function, errorFn?: Function): void {
         let sql = `UPDATE ${this.tableName} SET name = ?, ip = ?, port = ?,login_name = ?,login_pwd = ? where host_ids = ?`;
-        let arr = [json.name, json.ip, json.port, json.login_name, md5(json.login_pwd), json.host_ids]
+        let arr = [json.name, json.ip, json.port, json.login_name, aesEncrypt(json.login_pwd), json.host_ids]
         this.dao.connectDatabase(sql, arr, ({ affectedRows }) => {
             let json = affectedRows > 0 ? getJson('修改成功', 200) : getJson('修改失败', 404)
             if (successFn) successFn(json)
@@ -142,7 +142,7 @@ export default class Service {
     addData(json: json, successFn?: Function, errorFn?: Function): void {
         let sql = `INSERT INTO ${this.tableName} (host_ids, name, ip, port, os_type, os_version, os_arch, login_name, login_pwd, status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         let host_ids = getRandomString()
-        let arr = [host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), md5(json.login_pwd), 0]
+        let arr = [host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), aesEncrypt(json.login_pwd), 1]
         // console.log(sql)
         let moduleSql = `INSERT INTO beeneedle_module (ids, host_ids, type, status) VALUES `
         for (let i = 0; i <= 6; i++) {
@@ -217,6 +217,21 @@ export default class Service {
             // console.log("异步读取: " + data.toString());
             let postData = this.handleData(data)
             if (successFn) successFn(postData)
+        })
+    }
+
+    /**
+     * @description 主机重新部署
+     * @param hostIds 主机ids
+     * @param successFn 成功执行的回调函数
+     * @param errorFn 失败执行的回调函数
+     */
+    reset(hostIds: string, successFn?: Function, errorFn?: Function): void {
+        let select = `SELECT * FROM ${this.tableName} where host_ids = ?`
+        this.dao.connectDatabase(select, hostIds, res => {
+            // console.log(res[0])
+            // if (errorFn) errorFn()
+            if (successFn) successFn(res[0])
         })
     }
 

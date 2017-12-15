@@ -7,6 +7,8 @@
 import Host from '../web/Host'
 import Login from '../web/Login'
 import Setting from '../web/Setting'
+import User from '../web/User'
+import BeeneedleModule from '../web/BeeneedleModule'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -20,6 +22,8 @@ export default class Router {
     public host:Host = new Host()
     public login:Login  = new Login()
     public setting: Setting = new Setting()
+    public user: User = new User()
+    public beeneedleModule: BeeneedleModule = new BeeneedleModule()
     public app: any
     private loginActive: boolean = false
     constructor(app: any) {
@@ -58,6 +62,13 @@ export default class Router {
         this.app.post('/host/getSystems', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             this.host.getSystems(request.body, response, next)
+        })
+
+        // 主机重新部署
+        this.app.post('/host/hostSetup/:ids', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            let host_ids = request.params.ids || null
+            this.host.reset(host_ids, response, next)
         })
 
         // 获取主机
@@ -120,11 +131,56 @@ export default class Router {
             if (request.headers.token === 'debug') return response.send(JSON.stringify(getJson('成功', 200, { login_name: 'root', login_pwd: 'admin123.com', username: '超级管理员' })))
             let data = {
                 zh_names: request.session.role.username,
-                login_name: request.session.role.login_name
+                login_name: request.session.role.login_name,
+                ids: request.session.role.ids
             }
             response.send(JSON.stringify(getJson('成功', 200, data)))
             // this.login.checkRole(token, response, next)
         })
+
+        // 获取主机模块
+        this.app.post('/BeeneedleModule/get', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            this.beeneedleModule.getData(request.body, response, next)
+        })
+
+        // 设置主机模块
+        this.app.post('/BeeneedleModule/put', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            this.beeneedleModule.upDateData(request.body, response, next)
+        })
+
+        // 获取用户信息
+        this.app.post('/user/get', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            this.user.getData(request, response, next)
+        }) 
+
+        // 获取单个用户信息
+        this.app.post('/user/get/:ids', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            let ids = request.params.ids || null
+            this.user.getDataById(ids, response, next)
+        }) 
+
+        // 添加用户信息
+        this.app.post('/user/post', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            this.user.addData(request, response, next)
+        }) 
+
+        // 修改用户信息
+        this.app.post('/user/put', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            this.user.upDateData(request.body, response, next)
+        }) 
+
+        // 删除用户信息
+        this.app.post('/user/delete/:ids', (request, response, next) => {
+            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            let ids = request.params.ids || null
+            this.user.deleteDataById(ids, response, next)
+        }) 
 
 
         // 判断到底是登录蜂眼还是重定向到登录页

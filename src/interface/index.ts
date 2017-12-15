@@ -10,7 +10,10 @@ interface postData {
         host_ids?: string
         hostIds?: string
     }
-    size?: {}
+    size?: {},
+    username?:string
+    email?:string
+    login_name?:string
 }
 
 
@@ -32,23 +35,36 @@ interface request {
     }
     session?: {
         token?: string
-        role?: object
+        role?: loginData
         count?: number,
         userData?: Array<{
             token?: string
             role?: object
             count?: number,
         }>
-    }
+    },
+    body: postData
 }
 
 /**
  * @description 登录数据格式体
  */
 interface loginData {
-    login_name: string
-    login_pwd: string
+    login_name?: string
+    login_pwd?: string
     username?: string
+    ids?: string
+    email?: string
+}
+
+/**
+ * @description 主机模块数据格式
+ */
+interface moduleObj {
+    host_ids: string
+    ids: string
+    type: number
+    status: number
 }
 
 
@@ -58,4 +74,5 @@ export {
     response,
     request,
     loginData,
+    moduleObj
 }

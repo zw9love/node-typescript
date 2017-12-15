@@ -49,8 +49,7 @@ export default class NodeServer{
         this.app.use(session({
             secret: '12345',
             name: 'testapp',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
-            // cookie: {maxAge: 5 * 60 * 1000 },  //设置maxAge是80000ms，即80s后session和相应的cookie失效过期
-            cookie: {maxAge: 10 * 60 * 1000 },  //设置maxAge是30000ms，即30s后session和相应的cookie失效过期
+            cookie: {maxAge: 10 * 60 * 1000 },  //设置过期时间，session和相应的cookie失效过期
             resave: false, // 关键配置，让每个用户的session互不干扰
             saveUninitialized: true
         }));

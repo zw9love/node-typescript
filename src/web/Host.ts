@@ -6,8 +6,9 @@
 // let service = require('../../service/host/index')
 import Service from '../service/Host'
 import { postData, response } from '../interface/index'
-import { getJson } from '../util/index'
-
+import { getJson, aesDecrypt } from '../util/index'
+const Client = require('ssh2').Client;
+const conn = new Client();
 
 export default class Host {
     public service = new Service()
@@ -92,6 +93,44 @@ export default class Host {
     getSystems(data: object, response: response, next: Function): void {
         this.service.getSystems(data, res => {
             response.send(JSON.stringify(getJson('成功', 200, res)))
+        }, next)
+    }
+
+    /**
+     * @description 主机重新部署
+     * @param hostIds 主机ids
+     * @param response 响应体
+     * @param next 向下执行方法
+     */
+    reset(hostIds: string, response: response, next: Function): void {
+        this.service.reset(hostIds, res => {
+
+            conn.on('ready', function () {
+                console.log('Client :: ready');
+                conn.exec('uptime', function (err, stream) {
+                    if (err) throw err;
+                    stream.on('close', function (code, signal) {
+                        console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+                        conn.end();
+                    }).on('data', function (data) {
+                        console.log('STDOUT: ' + data);
+                    }).stderr.on('data', function (data) {
+                        console.log('STDERR: ' + data);
+                    });
+                });
+            }).connect({
+                host: res.ip,
+                port: res.port,
+                username: res.login_name,
+                // privateKey: require('fs').readFileSync('/here/is/my/key')
+                password: aesDecrypt(res.login_pwd)
+            });
+
+            console.log(res.ip)
+            console.log(res.port)
+            console.log(res.login_name)
+            console.log(aesDecrypt(res.login_pwd))
+            // response.send(JSON.stringify(getJson('成功', 200, res)))
         }, next)
     }
 
