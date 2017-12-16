@@ -13,14 +13,16 @@ import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
 import bodyParser = require('body-parser')
+const { check, validationResult } = require('express-validator/check');
+const { matchedData, sanitize } = require('express-validator/filter');
 import fs = require("fs")
 
 var multipartMiddleware = multipart()
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) // 如果前台传递的类型是Form Data类型的数据
 
 export default class Router {
-    public host:Host = new Host()
-    public login:Login  = new Login()
+    public host: Host = new Host()
+    public login: Login = new Login()
     public setting: Setting = new Setting()
     public user: User = new User()
     public beeneedleModule: BeeneedleModule = new BeeneedleModule()
@@ -154,33 +156,56 @@ export default class Router {
         this.app.post('/user/get', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             this.user.getData(request, response, next)
-        }) 
+        })
 
         // 获取单个用户信息
         this.app.post('/user/get/:ids', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             let ids = request.params.ids || null
             this.user.getDataById(ids, response, next)
-        }) 
+        })
 
-        // 添加用户信息
-        this.app.post('/user/post', (request, response, next) => {
+        // 添加用户信息 validate检查一下
+        this.app.post('/user/post', [
+            check('login_name')
+                .trim()
+                .isLength({ max: 20 }).withMessage('login_name should length <= 20')
+                .not().isIn(['', undefined,null]).withMessage('you have no login_name'),
+                // .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('login_name not match'),
+            check('username')
+                .trim()
+                .not().isIn(['', undefined,null]).withMessage('you have no username'),
+            check('email')
+                .trim()
+                .isEmail().withMessage('must be an email'),
+            check('login_pwd')
+                .trim()
+                .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('password not match')
+        ], (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
+            const errors = validationResult(request);
+            // console.log(errors.array())
+            // console.log(errors.mapped())
+            if (!errors.isEmpty()) {
+                let msg = errors.array()[0].msg
+                //   return response.status(422).json({ errors: errors.mapped() });
+                return response.send(JSON.stringify(getJson(msg, 606, null)))
+            }
             this.user.addData(request, response, next)
-        }) 
+        })
 
         // 修改用户信息
         this.app.post('/user/put', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             this.user.upDateData(request.body, response, next)
-        }) 
+        })
 
         // 删除用户信息
         this.app.post('/user/delete/:ids', (request, response, next) => {
             if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
             let ids = request.params.ids || null
             this.user.deleteDataById(ids, response, next)
-        }) 
+        })
 
 
         // 判断到底是登录蜂眼还是重定向到登录页

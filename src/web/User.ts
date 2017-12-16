@@ -44,8 +44,6 @@ export default class User {
     addData(request: request, response: response, next: Function): void {
         let json = request.body
         let username = request.session.role.username
-        if (!json.email) return response.send(JSON.stringify(getJson('邮箱名字不能为空', 606, null)))
-        if (!json.login_name) return response.send(JSON.stringify(getJson('登录名不能为空', 606, null)))
         this.service.addData(json, username, res => {
             if (res.sum === 1) return response.send(JSON.stringify(getJson('用户名重复了，请更换用户名', 606, null)))
             if (res.affectedRows > 0) return response.send(JSON.stringify(getJson('成功', 200, null)))

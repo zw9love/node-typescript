@@ -4,7 +4,7 @@
  */
 
 import Dao from '../dao/index'
-import { getJson, getRandomString } from '../util/index'
+import { getJson, getRandomString,aesEncrypt } from '../util/index'
 import { loginData } from '../interface/index'
 
 export default class Service {
@@ -26,17 +26,27 @@ export default class Service {
      * @param errorFn 失败执行的回调函数
      */
     checkLogin(data: loginData, successFn?: Function, errorFn?: Function): void {
-        let sql = `SELECT * FROM ${this.tableName}`
-        this.dao.connectDatabase(sql, data, res => {
+        // console.log(data)
+        let login_name = data.login_name
+        let login_pwd = aesEncrypt(data.login_pwd)
+        let sql = `SELECT * FROM ${this.tableName} where login_name = ? and login_pwd = ? `
+        let sqlData = [login_name,login_pwd]
+        // console.log(sqlData)
+        this.dao.connectDatabase(sql, sqlData, res => {
+            console.log(res)
             let flag: boolean = false
-            let userData = this.userData
+            // let userData = this.userData
             let role: object = {}
-            userData.forEach(e => {
-                if (e.login_name === data.login_name && e.login_pwd === data.login_pwd) {
-                    flag = true
-                    role = e
-                }
-            })
+            if(res.length === 1){
+                flag = true
+                role = res[0]
+            }
+            // userData.forEach(e => {
+            //     if (e.login_name === data.login_name && e.login_pwd === data.login_pwd) {
+            //         flag = true
+            //         role = e
+            //     }
+            // })
 
             // 登录成功data
             let loginSuccessData = {
