@@ -17,7 +17,7 @@ export default class Setting {
     getData(postData: postData, response: response, next: Function): void {
         this.service.getData(postData, res => {
             if (res[0]) return response.send(JSON.stringify(getJson('成功', 200, res[0])));
-            response.send(JSON.stringify(getJson('成功', 200, null)));
+            response.json(getJson('成功', 200, null))
         },next)
     }
     /**
@@ -29,7 +29,7 @@ export default class Setting {
     getLoginInfo(postData: postData, response: response, next: Function): void {
         this.service.getLoginInfo(postData, res => {
             if (res[0]) return response.send(JSON.stringify(getJson('成功', 200, res[0])));
-            response.send(JSON.stringify(getJson('成功', 200, null)));
+            response.json(getJson('成功', 200, null))
         }, next)
     }
 }

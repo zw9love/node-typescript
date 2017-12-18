@@ -17,7 +17,7 @@ export default class Setting {
     getData(postData: postData, response: response, next: Function): void {
         let host_ids = postData.row.host_ids
         this.service.getData(host_ids, res => {
-            response.send(JSON.stringify(getJson('成功', 200, res)));
+            response.json(getJson('成功', 200, res))
         }, next)
     }
     /**
@@ -28,8 +28,8 @@ export default class Setting {
      */
     upDateData(postData: Array<moduleObj>, response: response, next: Function): void {
         this.service.upDateData(postData, ({ affectedRows}) => {
-            if (affectedRows === postData.length) return response.send(JSON.stringify(getJson('成功', 200, null)));
-            response.send(JSON.stringify(getJson('修改模块失败', 404, null)));
+            if (affectedRows === postData.length) return response.json(getJson('成功', 200, null))
+            response.json(getJson('修改模块失败', 404, null))
         }, next)
     }
 }

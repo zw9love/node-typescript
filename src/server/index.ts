@@ -30,13 +30,21 @@ import express = require('express')
 import bodyParser = require('body-parser')
 import session = require('express-session');
 import cookieParser = require('cookie-parser');
+let RedisStore = require('connect-redis')(session);
+let MemcachedStore = require('connect-memcached')(session);
 import Router from '../router/index'
+import {getRandomString} from '../util/index'
 let app = express();
 
 // let router = new Router()
 export default class NodeServer{
     public app = express()
     public router = new Router(this.app)
+    public storeOption: object = {
+        host: 'localhost', 
+        port: 6379,
+        logErrors: true
+    }
 
     constructor(){
         this.init()
@@ -47,11 +55,16 @@ export default class NodeServer{
         this.app.use(bodyParser.json());
         this.app.use(cookieParser());
         this.app.use(session({
-            secret: '12345',
-            name: 'testapp',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
-            cookie: {maxAge: 10 * 60 * 1000 },  //设置过期时间，session和相应的cookie失效过期
-            resave: false, // 关键配置，让每个用户的session互不干扰
-            saveUninitialized: true
+            secret: getRandomString(),
+            name: getRandomString(),   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+            cookie: {maxAge: 30 * 60 * 1000 },  //设置过期时间，session和相应的cookie失效过期
+            resave: true, // 关键配置，让每个用户的session互不干扰
+            saveUninitialized: true,
+            // store: new RedisStore(this.storeOption),
+            // store: new MemcachedStore({
+            //     hosts: ['127.0.0.1:3306'],
+            //     secret: '123, easy as ABC. ABC, easy as 123' // Optionally use transparent encryption for memcache session data
+            // })
         }));
         this.app.use(express.static("static"));
         // this.app.use(express.static("view"));

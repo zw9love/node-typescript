@@ -44,14 +44,17 @@ export default class Router {
 
         // 获取系统设置项
         this.app.post('/setting/get', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.setting.getData(request.body, response, next)
+            checkToken(request, response, o => {
+                this.setting.getData(request.body, response, next)
+            })
+            
         })
 
         // 获取管理员上次登录信息
         this.app.post('/limit/lastLoginTime', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.setting.getLoginInfo(request.body, response, next)
+            checkToken(request, response, o => {
+                this.setting.getLoginInfo(request.body, response, next)
+            })
         })
 
         // login路由
@@ -62,149 +65,167 @@ export default class Router {
 
         // 获取文件系统信息
         this.app.post('/host/getSystems', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.host.getSystems(request.body, response, next)
+            checkToken(request, response, o => {
+                this.host.getSystems(request.body, response, next)
+            })
         })
 
         // 主机重新部署
         this.app.post('/host/hostSetup/:ids', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            let host_ids = request.params.ids || null
-            this.host.reset(host_ids, response, next)
+            checkToken(request, response, o => {
+                let host_ids = request.params.ids || null
+                this.host.reset(host_ids, response, next)
+            })
         })
 
         // 获取主机
         this.app.post('/host/get', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.host.getData(request.body, response, next)
+            checkToken(request, response, o => {
+                this.host.getData(request.body, response, next)
+            })
         })
 
         // 通过获取主机
         this.app.post('/host/get/:ids', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            let host_ids = request.params.ids || null
-            this.host.getDataById(host_ids, response, next)
+            checkToken(request, response, o => {
+                let host_ids = request.params.ids || null
+                this.host.getDataById(host_ids, response, next)
+            })
         })
 
         // 根据ids删除主机
         this.app.post('/host/delete/:ids', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            let host_ids = request.params.ids || null
-            this.host.deleteDataById(host_ids, response, next)
+            checkToken(request, response, o => {
+                let host_ids = request.params.ids || null
+                this.host.deleteDataById(host_ids, response, next)
+            })
         })
 
         // 批量删除主机
         this.app.post('/host/delete', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            let idsArr = request.body || []
-            this.host.deleteDataBatch(idsArr, response, next)
+            checkToken(request, response, o => {
+                let idsArr = request.body || []
+                this.host.deleteDataBatch(idsArr, response, next)
+            })
         })
 
         // 修改主机
         this.app.post('/host/put', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.host.upDateData(request.body, response, next)
+            checkToken(request, response, o => {
+                this.host.upDateData(request.body, response, next)
+            })
         })
 
         // 添加主机
         this.app.post('/host/post', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            console.log(request.body)
-            this.host.addData(request.body, response, next)
+            checkToken(request, response, o => {
+                console.log(request.body)
+                this.host.addData(request.body, response, next)
+            })
         })
 
         // 拿到FormData上传的参数
         this.app.post('/upload', multipartMiddleware, function (request, response, next) {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            console.log(request.body, request.files)
+            checkToken(request, response, o => {
+                console.log(request.body, request.files)
+            })
         })
 
         // 获取菜单
         this.app.post('/menu/get', (request, response, next) => {
-            // console.log(request.headers.token)
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.login.getMenu(response, next)
+            checkToken(request, response, o => {
+                this.login.getMenu(response, next)
+            })
         })
 
 
         // 获取权限
         this.app.post('/role/getCur', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            if (request.headers.token === 'debug') return response.send(JSON.stringify(getJson('成功', 200, { login_name: 'root', login_pwd: 'admin123.com', username: '超级管理员' })))
-            let data = {
-                zh_names: request.session.role.username,
-                login_name: request.session.role.login_name,
-                ids: request.session.role.ids
-            }
-            response.send(JSON.stringify(getJson('成功', 200, data)))
+            checkToken(request, response, o => {
+                if (request.headers.token === 'debug') return response.json(getJson('成功', 200, { login_name: 'root', login_pwd: 'admin123.com', username: '超级管理员' }))
+                let data = {
+                    zh_names: request.session.role.username,
+                    login_name: request.session.role.login_name,
+                    ids: request.session.role.ids
+                }
+                response.json((getJson('成功', 200, data)))
+            })
             // this.login.checkRole(token, response, next)
         })
 
         // 获取主机模块
         this.app.post('/BeeneedleModule/get', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.beeneedleModule.getData(request.body, response, next)
+            checkToken(request, response, o => {
+                this.beeneedleModule.getData(request.body, response, next)
+            })
         })
 
         // 设置主机模块
         this.app.post('/BeeneedleModule/put', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.beeneedleModule.upDateData(request.body, response, next)
+            checkToken(request, response, o => {
+                this.beeneedleModule.upDateData(request.body, response, next)
+            })
         })
 
         // 获取用户信息
         this.app.post('/user/get', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.user.getData(request, response, next)
+            checkToken(request, response, o => {
+                this.user.getData(request, response, next)
+            })
         })
 
         // 获取单个用户信息
         this.app.post('/user/get/:ids', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            let ids = request.params.ids || null
-            this.user.getDataById(ids, response, next)
+            checkToken(request, response, o => {
+                let ids = request.params.ids || null
+                this.user.getDataById(ids, response, next)
+            })
         })
 
         // 添加用户信息 validate检查一下
         this.app.post('/user/post', [
             check('login_name')
                 .trim()
-                .isLength({ max: 20 }).withMessage('login_name should length <= 20')
-                .not().isIn(['', undefined,null]).withMessage('you have no login_name'),
+                .isLength({ max: 32 }).withMessage('登录名不能大于32位字符！')
+                .not().isIn(['', undefined,null]).withMessage('请填写登录名！'),
                 // .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('login_name not match'),
             check('username')
                 .trim()
-                .not().isIn(['', undefined,null]).withMessage('you have no username'),
+                .not().isIn(['', undefined,null]).withMessage('请填写用户名！'),
             check('email')
                 .trim()
-                .isEmail().withMessage('must be an email'),
+                .not().isIn(['', undefined, null]).withMessage('请填写您的邮箱！')
+                .isEmail().withMessage('请输入一个正确的邮箱！'),
             check('login_pwd')
                 .trim()
-                .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('password not match')
+                .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('设置的密码不符合要求！，请重新填写！')
         ], (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            const errors = validationResult(request);
-            // console.log(errors.array())
-            // console.log(errors.mapped())
-            if (!errors.isEmpty()) {
-                let msg = errors.array()[0].msg
-                //   return response.status(422).json({ errors: errors.mapped() });
-                return response.send(JSON.stringify(getJson(msg, 606, null)))
-            }
-            this.user.addData(request, response, next)
+            checkToken(request, response, o => {
+                const errors = validationResult(request);
+                // console.log(errors.array())
+                // console.log(errors.mapped())
+                if (!errors.isEmpty()) {
+                    let msg = errors.array()[0].msg
+                    //   return response.status(422).json({ errors: errors.mapped() });
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.user.addData(request, response, next)
+            })
         })
 
         // 修改用户信息
         this.app.post('/user/put', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            this.user.upDateData(request.body, response, next)
+            checkToken(request, response, o => {
+                this.user.upDateData(request.body, response, next)
+            })
         })
 
         // 删除用户信息
         this.app.post('/user/delete/:ids', (request, response, next) => {
-            if (!checkToken(request)) return response.send(JSON.stringify(getJson('用户登录失效', 611, null)))
-            let ids = request.params.ids || null
-            this.user.deleteDataById(ids, response, next)
+            checkToken(request, response, o => {
+                let ids = request.params.ids || null
+                this.user.deleteDataById(ids, response, next)
+            })
         })
 
 

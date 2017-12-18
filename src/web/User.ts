@@ -17,8 +17,8 @@ export default class User {
      * @param next 向下执行方法
      */
     getData(request: request, response: response, next: Function): void {
-        this.service.getData(request, res => {
-            response.send(JSON.stringify(res))
+        this.service.getData(request, data => {
+            response.json(data)
         }, next)
     }
 
@@ -31,7 +31,7 @@ export default class User {
      */
     getDataById(hostIds: string, response: response, next: Function): void {
         this.service.getDataById(hostIds, data => {
-            response.send(JSON.stringify(data))
+            response.json(data)
         }, next)
     }
 
@@ -45,9 +45,9 @@ export default class User {
         let json = request.body
         let username = request.session.role.username
         this.service.addData(json, username, res => {
-            if (res.sum === 1) return response.send(JSON.stringify(getJson('用户名重复了，请更换用户名', 606, null)))
-            if (res.affectedRows > 0) return response.send(JSON.stringify(getJson('成功', 200, null)))
-            response.send(JSON.stringify(getJson('添加用户失败', 606, null)))
+            if (res.sum === 1) return response.json(getJson('用户名重复了，请更换用户名', 606, null))
+            if (res.affectedRows > 0) return response.json(getJson('成功', 200, null))
+            response.json(getJson('添加用户失败', 606, null))
         }, next)
     }
 
@@ -59,7 +59,7 @@ export default class User {
      */
     upDateData(json: any, response: response, next: Function): void {
         this.service.upDateData(json, data => {
-            response.send(JSON.stringify(data))
+            response.json(data)
         }, next)
     }
 
@@ -71,7 +71,7 @@ export default class User {
      */
     deleteDataById(ids: string, response: response, next: Function): void {
         this.service.deleteData(ids, data => {
-            response.send(JSON.stringify(data));
+            response.json(data)
         }, next)
     }
 }

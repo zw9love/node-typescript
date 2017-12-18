@@ -5,7 +5,7 @@
 
 import crypto = require('crypto');  //加载加密文件
 import uuidv1 = require('uuid/v1');  //生成随机字符串
-import { request } from "../interface/index";
+import { request, response } from "../interface/index";
 const key = 'zengwei'
 
 /**
@@ -83,16 +83,21 @@ function getRandomString(): string {
  * @description 检查token是否失效
  * @param request 请求体
  */
-function checkToken(request: request): boolean {
+function checkToken(request: request, response: response, successFn: Function): boolean | number {
     let headerToken = request.headers.token
     let sessionToken = request.session.token
     // console.log('sessionid：' + request.session.id)
     // console.log('sessionID：' + request.sessionID)
     // console.log('seessionToken：' + seessionToken)
     if (headerToken === 'debug') return true
-    let flag = headerToken === sessionToken
-    if (flag) request.session.count++ //刷新过期时间
-    return flag
+    let flag = ( headerToken === sessionToken )
+    if (flag){
+        request.session.count++
+        if (successFn) successFn(flag)
+    }else{
+        response.json(getJson('用户登录失效', 611, null))
+    }
+    // return flag
 }
 
 /**

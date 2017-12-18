@@ -22,8 +22,7 @@ export default class Host {
      */
     getData(postData: postData, response: response, next: Function): void {
         this.service.getData(postData, data => {
-            // console.log(data)
-            response.send(JSON.stringify(data));
+            response.json(data)
         }, next)
     }
     
@@ -35,7 +34,7 @@ export default class Host {
      */
     getDataById(hostIds: string, response: response, next: Function): void {
         this.service.getDataById(hostIds, data => {
-            response.send(JSON.stringify(data));
+            response.json(data)
         }, next)
     }
 
@@ -47,7 +46,7 @@ export default class Host {
      */
     deleteDataById(host_ids: string, response: response, next: Function): void {
         this.service.deleteData(host_ids, data => {
-            response.send(JSON.stringify(data));
+            response.json(data)
         }, next)
     }
     /**
@@ -58,7 +57,7 @@ export default class Host {
      */
     deleteDataBatch(idsArr: Array<string>, response: response, next: Function): void {
         this.service.deleteData(idsArr, data => {
-            response.send(JSON.stringify(data));
+            response.json(data)
         }, next)
     }
     /**
@@ -69,7 +68,7 @@ export default class Host {
      */
     upDateData(json: object, response: response, next: Function): void {
         this.service.upDateData(json, data => {
-            response.send(JSON.stringify(data));
+            response.json(data)
         }, next)
     }
     /**
@@ -80,7 +79,7 @@ export default class Host {
      */
     addData(json: object, response: response, next: Function): void {
         this.service.addData(json, data => {
-            response.send(JSON.stringify(data));
+            response.json(data)
         }, next)
     }
 
@@ -92,7 +91,7 @@ export default class Host {
      */
     getSystems(data: object, response: response, next: Function): void {
         this.service.getSystems(data, res => {
-            response.send(JSON.stringify(getJson('成功', 200, res)))
+            response.json(getJson('成功', 200, res))
         }, next)
     }
 

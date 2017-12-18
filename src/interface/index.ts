@@ -23,6 +23,7 @@ interface postData {
 interface response {
     send: Function
     header: Function
+    json: Function
 }
 
 
@@ -42,6 +43,7 @@ interface request {
             role?: object
             count?: number,
         }>
+        id?:String
     },
     body: postData
 }

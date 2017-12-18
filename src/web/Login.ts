@@ -21,12 +21,13 @@ export default class Login {
      */
     checkLogin(json: loginData, request: request, response: response, next: Function): void {
         this.service.checkLogin(json, res => {
-            if (res.status === 606) return response.send(JSON.stringify(res.data))
+            if (res.status === 606) return response.json(res.data)
+            // console.log('session：' + request.session)
             request.session.token = res.token
             request.session.role = res.role
             request.session.count = 1
             response.header("token", res.token)
-            response.send(JSON.stringify(res.data))
+            response.json(res.data)
         }, next)
     }
 
@@ -37,7 +38,7 @@ export default class Login {
      */
     getMenu(response: response, next: Function): void {
         this.service.getMenu(data => {
-            response.send(JSON.stringify(data));
+            response.json(data)
         }, next)
     }
 }
