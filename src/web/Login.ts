@@ -5,9 +5,11 @@
 
 import Service from '../service/Login'
 import {request, response, loginData} from '../interface/index'
+import Redis from '../util/Redis'
 
 export default class Login {
     public service = new Service()
+    public client = Redis.client
 
     constructor() {
     }
@@ -22,11 +24,16 @@ export default class Login {
     checkLogin(json: loginData, request: request, response: response, next: Function): void {
         this.service.checkLogin(json, res => {
             if (res.status === 606) return response.json(res.data)
-            // console.log('session：' + request.session)
-            request.session.token = res.token
-            request.session.role = res.role
-            request.session.count = 1
-            response.header("token", res.token)
+            this.client.get(res.role.login_name,  (err, replies) => {
+                // 该用户已经之前有人登陆
+                if (replies !== null){
+                    this.client.del(replies)
+                }
+                this.client.set(res.role.login_name, res.role.token, 'EX', 3600) // 过期时间单位是秒
+                this.client.set(res.role.token, res.role.login_name, 'EX', 3600) // 过期时间单位是秒
+                this.client.set('role', JSON.stringify(res.role), 'EX', 3600)
+            });
+            response.header("token", res.role.token)
             response.json(res.data)
         }, next)
     }

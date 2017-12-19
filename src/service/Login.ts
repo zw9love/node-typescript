@@ -33,32 +33,23 @@ export default class Service {
         let sqlData = [login_name,login_pwd]
         // console.log(sqlData)
         this.dao.connectDatabase(sql, sqlData, res => {
-            console.log(res)
             let flag: boolean = false
-            // let userData = this.userData
-            let role: object = {}
+            let role: any = {}
             if(res.length === 1){
                 flag = true
                 role = res[0]
+                role.token = getRandomString()
             }
-            // userData.forEach(e => {
-            //     if (e.login_name === data.login_name && e.login_pwd === data.login_pwd) {
-            //         flag = true
-            //         role = e
-            //     }
-            // })
-
             // 登录成功data
             let loginSuccessData = {
                 role: role,
-                token: getRandomString(),
+                // token: getRandomString(),
                 data: getJson('登录成功', 200, null),
                 status: 200
             }
 
             // 登录失败data
             let loginfailData = {
-                role: role,
                 data: getJson('用户名或密码错误', 606, null),
                 status: 606
             }

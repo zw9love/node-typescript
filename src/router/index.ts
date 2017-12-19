@@ -13,9 +13,11 @@ import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
 import bodyParser = require('body-parser')
+import Redis from '../util/Redis'
 const { check, validationResult } = require('express-validator/check');
 const { matchedData, sanitize } = require('express-validator/filter');
 import fs = require("fs")
+
 
 var multipartMiddleware = multipart()
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) // 如果前台传递的类型是Form Data类型的数据
@@ -27,6 +29,7 @@ export default class Router {
     public user: User = new User()
     public beeneedleModule: BeeneedleModule = new BeeneedleModule()
     public app: any
+    public client: any = Redis.client
     private loginActive: boolean = false
     constructor(app: any) {
         this.app = app
@@ -47,7 +50,7 @@ export default class Router {
             checkToken(request, response, o => {
                 this.setting.getData(request.body, response, next)
             })
-            
+
         })
 
         // 获取管理员上次登录信息
@@ -58,8 +61,22 @@ export default class Router {
         })
 
         // login路由
-        this.app.post('/login/dologin', urlencodedParser, (request, response, next) => {
+        this.app.post('/login/dologin', urlencodedParser, [
+            check('login_name')
+                .trim()
+                .not().isIn(['', undefined, null]).withMessage('请填写登录名！'),
+            // .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('login_name not match'),
+            check('login_pwd')
+                .trim()
+                .not().isIn(['', undefined, null]).withMessage('请填写密码！')
+                .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('设置的密码不符合要求！，请重新填写！')
+        ], (request, response, next) => {
             // if(!this.login) this.login = new Login() // 判断Login对象是否存在 不存在才生成
+            const errors = validationResult(request)
+            if (!errors.isEmpty()) {
+                let msg = errors.array()[0].msg
+                return response.json((getJson(msg, 606, null)))
+            }
             this.login.checkLogin(request.body, request, response, next)
         })
 
@@ -143,14 +160,17 @@ export default class Router {
         this.app.post('/role/getCur', (request, response, next) => {
             checkToken(request, response, o => {
                 if (request.headers.token === 'debug') return response.json(getJson('成功', 200, { login_name: 'root', login_pwd: 'admin123.com', username: '超级管理员' }))
-                let data = {
-                    zh_names: request.session.role.username,
-                    login_name: request.session.role.login_name,
-                    ids: request.session.role.ids
-                }
-                response.json((getJson('成功', 200, data)))
+                this.client.get("role", function (err, res) {
+                    if(err) return false
+                    let role = JSON.parse(res)
+                    let data = {
+                        zh_names: role.username,
+                        login_name: role.login_name,
+                        ids: role.ids
+                    }
+                    response.json((getJson('成功', 200, data)))
+                })
             })
-            // this.login.checkRole(token, response, next)
         })
 
         // 获取主机模块
@@ -187,11 +207,11 @@ export default class Router {
             check('login_name')
                 .trim()
                 .isLength({ max: 32 }).withMessage('登录名不能大于32位字符！')
-                .not().isIn(['', undefined,null]).withMessage('请填写登录名！'),
-                // .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('login_name not match'),
+                .not().isIn(['', undefined, null]).withMessage('请填写登录名！'),
+            // .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('login_name not match'),
             check('username')
                 .trim()
-                .not().isIn(['', undefined,null]).withMessage('请填写用户名！'),
+                .not().isIn(['', undefined, null]).withMessage('请填写用户名！'),
             check('email')
                 .trim()
                 .not().isIn(['', undefined, null]).withMessage('请填写您的邮箱！')

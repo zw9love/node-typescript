@@ -6,6 +6,8 @@
 import crypto = require('crypto');  //加载加密文件
 import uuidv1 = require('uuid/v1');  //生成随机字符串
 import { request, response } from "../interface/index";
+import Redis from '../util/Redis'
+const client = Redis.client
 const key = 'zengwei'
 
 /**
@@ -83,21 +85,31 @@ function getRandomString(): string {
  * @description 检查token是否失效
  * @param request 请求体
  */
-function checkToken(request: request, response: response, successFn: Function): boolean | number {
+function checkToken(request: request, response: response, successFn: Function){
     let headerToken = request.headers.token
-    let sessionToken = request.session.token
-    // console.log('sessionid：' + request.session.id)
-    // console.log('sessionID：' + request.sessionID)
-    // console.log('seessionToken：' + seessionToken)
-    if (headerToken === 'debug') return true
-    let flag = ( headerToken === sessionToken )
-    if (flag){
-        request.session.count++
-        if (successFn) successFn(flag)
-    }else{
-        response.json(getJson('用户登录失效', 611, null))
-    }
-    // return flag
+    client.get(headerToken, function (err, replies) {
+        if (replies === null) return response.json(getJson('用户登录失效', 611, null))
+        // 能进到这就说明token存在且没过期
+        let login_name = replies
+        // console.log('login_name：' + login_name)
+        client.set(login_name, headerToken, 'EX', 30) // 过期时间单位是秒
+        client.set(headerToken, login_name, 'EX', 30) // 过期时间单位是秒
+        if (successFn) successFn()
+    });
+    // let sessionToken = request.session.token
+    // // console.log(request.session.store)
+    // // console.log('sessionid：' + request.session.id)
+    // // console.log('sessionID：' + request.sessionID)
+    // // console.log('seessionToken：' + seessionToken)
+    // if (headerToken === 'debug') return true
+    // let flag = ( headerToken === sessionToken )
+    // if (flag){
+    //     request.session.count++
+    //     if (successFn) successFn(flag)
+    // }else{
+    //     response.json(getJson('用户登录失效', 611, null))
+    // }
+    // // return flag
 }
 
 /**

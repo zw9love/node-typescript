@@ -16,11 +16,6 @@
 //     response.end(); 
 // }).listen(9090);
 
-
-// import express = require('express')
-// import bodyParser = require('body-parser')
-// import Router from '../router/index'
-// import treeify from 'treeify'
 // import opn from 'opn'
 // let express = require('express');
 // let bodyParser = require('body-parser');
@@ -34,6 +29,7 @@ let RedisStore = require('connect-redis')(session);
 let MemcachedStore = require('connect-memcached')(session);
 import Router from '../router/index'
 import {getRandomString} from '../util/index'
+
 let app = express();
 
 // let router = new Router()
@@ -49,25 +45,22 @@ export default class NodeServer{
     constructor(){
         this.init()
     }
-
+    
     init(): void {
         console.log('this.app初始化了')
-        this.app.use(bodyParser.json());
-        this.app.use(cookieParser());
-        this.app.use(session({
-            secret: getRandomString(),
-            name: getRandomString(),   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
-            cookie: {maxAge: 30 * 60 * 1000 },  //设置过期时间，session和相应的cookie失效过期
-            resave: true, // 关键配置，让每个用户的session互不干扰
-            saveUninitialized: true,
-            // store: new RedisStore(this.storeOption),
-            // store: new MemcachedStore({
-            //     hosts: ['127.0.0.1:3306'],
-            //     secret: '123, easy as ABC. ABC, easy as 123' // Optionally use transparent encryption for memcache session data
-            // })
-        }));
         this.app.use(express.static("static"));
         // this.app.use(express.static("view"));
+        this.app.use(bodyParser.json());
+        this.app.use(cookieParser());
+        // 不用express-session了，太虎
+        // this.app.use(session({
+        //     secret: '123456',
+        //     name: 'node',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+        //     cookie: {maxAge: 30 * 60 * 1000 },  //设置过期时间，session和相应的cookie失效过期
+        //     resave: true, // 关键配置，让每个用户的session互不干扰
+        //     saveUninitialized: true,
+        //     store: new RedisStore(this.storeOption)
+        // }));
         this.router.init()
         let server = this.app.listen(9090, function () {
             let host = server.address().address

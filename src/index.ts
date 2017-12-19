@@ -5,4 +5,5 @@
  */
 import NodeServer from './server/index'
 new NodeServer()
-// require('./util/test')
+// require('./util/testSsh')
+// require('./util/testRedis')

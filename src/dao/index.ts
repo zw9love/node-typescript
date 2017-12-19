@@ -131,7 +131,7 @@ export default class Dao {
                         console.log(err);
                         return;
                     }
-                    console.log('事务成功,提交!');
+                    // console.log('事务成功,提交!');
                     //释放资源
                     connection.end();
                 });

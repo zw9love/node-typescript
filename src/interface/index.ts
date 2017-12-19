@@ -44,8 +44,10 @@ interface request {
             count?: number,
         }>
         id?:String
+        store?:any
     },
     body: postData
+    store?:any
 }
 
 /**
