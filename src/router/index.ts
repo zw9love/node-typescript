@@ -61,7 +61,8 @@ export default class Router {
         })
 
         // login路由
-        this.app.post('/login/dologin', urlencodedParser, [
+        // this.app.post('/login/dologin', urlencodedParser, [
+        this.app.post('/login/dologin', [
             check('login_name')
                 .trim()
                 .not().isIn(['', undefined, null]).withMessage('请填写登录名！'),
@@ -250,7 +251,7 @@ export default class Router {
 
 
         // 判断到底是登录蜂眼还是重定向到登录页
-        this.app.get('/', (request, response, next) => {
+        this.app.post('/', (request, response, next) => {
             if (this.loginActive) {
                 this.loginActive = false
                 fs.readFile('view/index.html', function (err, data) {
@@ -266,10 +267,18 @@ export default class Router {
 
 
         // 调到这步说明了登录账号密码正确
-        this.app.get('/login/loged', (request, response, next) => {
+        this.app.post('/login/loged', (request, response, next) => {
             this.loginActive = true
-            response.writeHead(302, { 'Location': '/' })
-            response.end()
+            this.client.get("role", function (err, res) {
+                if (err) return false
+                let role = JSON.parse(res)
+                response.json((getJson('成功', 200, { role:role})))
+            })
+
+            // 老版本登录
+            // this.loginActive = true
+            // response.writeHead(302, { 'Location': '/' })
+            // response.end()
         })
 
         // 文件读取login.html文件
@@ -283,7 +292,7 @@ export default class Router {
 
         // 重定向到/login
         this.app.get('*', (request, response, next) => {
-            console.log(request.url)
+            // console.log(request.url)
             response.writeHead(302, { 'Location': '/login' })
             response.end()
         })

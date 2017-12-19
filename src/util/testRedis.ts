@@ -42,9 +42,9 @@ var redis = require("redis"),
 
 
 // 枚举趣出数据库中的所有键
-client.keys('*', function (err, keys) {
-    keys.forEach(e => {
-        client.del(e)
-    })
-    console.log(keys)
-});
+// client.keys('*', function (err, keys) {
+//     keys.forEach(e => {
+//         client.del(e)
+//     })
+//     console.log(keys)
+// });

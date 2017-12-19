@@ -5,6 +5,7 @@
 import Dao from '../dao/index'
 import { response, request, loginData } from '../interface/index'
 import { getJson, checkPage, beginTransaction, getRandomString, aesEncrypt } from '../util/index'
+import Redis from '../util/Redis'
 
 
 export default class User {
@@ -18,25 +19,30 @@ export default class User {
      * @param errorFn 失败执行的回调函数
      */
     getData(request: request, successFn?: Function, errorFn?: Function): void {
-        let select = `SELECT * FROM ${this.tableName} `
-        let where = ` where username = ? `
-        let count = `SELECT count(*) as sum FROM ${this.tableName}`
-        let limit = ''
-        let username = request.session.role.username
-        let { row, page } = request.body
-        if (page) {
-            checkPage({ row, where, page, limit })
-        }
+        Redis.client.get("role",  (err, res) => {
+            let select = `SELECT * FROM ${this.tableName} `
+            let where = ` where username = ? `
+            let count = `SELECT count(*) as sum FROM ${this.tableName}`
+            let limit = ''
+            if (err) return false
+            let role = JSON.parse(res)
+            let username = role.username
+            let { row, page } = request.body
+            if (page) {
+                checkPage({ row, where, page, limit })
+            }
 
-        let tsData = [
-            { sql: count + where, dataArr: username },
-            { sql: select + where + limit, dataArr: username },
-        ]
+            let tsData = [
+                { sql: count + where, dataArr: username },
+                { sql: select + where + limit, dataArr: username },
+            ]
 
-        // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
-        this.dao.connectTransaction(tsData, (connection, res) => {
-            beginTransaction({ connection, res, page: page ? page : {}, successFn, dao: this.dao })
-        }, errorFn)
+            // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
+            this.dao.connectTransaction(tsData, (connection, res) => {
+                beginTransaction({ connection, res, page: page ? page : {}, successFn, dao: this.dao })
+            }, errorFn)
+
+        })
     }
 
 
@@ -75,7 +81,7 @@ export default class User {
                 if (successFn) successFn(res[0])
                 return
             } 
-            console.log('没return')
+            // console.log('没return')
             this.dao.connectDatabase(sql, arr, res => {
                 if (successFn) successFn(res)
             })

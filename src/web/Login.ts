@@ -10,6 +10,7 @@ import Redis from '../util/Redis'
 export default class Login {
     public service = new Service()
     public client = Redis.client
+    public expired = Redis.expired
 
     constructor() {
     }
@@ -29,9 +30,9 @@ export default class Login {
                 if (replies !== null){
                     this.client.del(replies)
                 }
-                this.client.set(res.role.login_name, res.role.token, 'EX', 3600) // 过期时间单位是秒
-                this.client.set(res.role.token, res.role.login_name, 'EX', 3600) // 过期时间单位是秒
-                this.client.set('role', JSON.stringify(res.role), 'EX', 3600)
+                this.client.set(res.role.login_name, res.role.token, 'EX', this.expired) // 过期时间单位是秒
+                this.client.set(res.role.token, res.role.login_name, 'EX', this.expired) // 过期时间单位是秒
+                this.client.set('role', JSON.stringify(res.role), 'EX', this.expired)
             });
             response.header("token", res.role.token)
             response.json(res.data)

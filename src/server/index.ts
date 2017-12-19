@@ -26,15 +26,15 @@ import bodyParser = require('body-parser')
 import session = require('express-session');
 import cookieParser = require('cookie-parser');
 let RedisStore = require('connect-redis')(session);
-let MemcachedStore = require('connect-memcached')(session);
+// let MemcachedStore = require('connect-memcached')(session);
 import Router from '../router/index'
 import {getRandomString} from '../util/index'
-
+import Redis from '../util/Redis'
 let app = express();
 
 // let router = new Router()
 export default class NodeServer{
-    public app = express()
+    public app = app
     public router = new Router(this.app)
     public storeOption: object = {
         host: 'localhost', 
@@ -47,7 +47,7 @@ export default class NodeServer{
     }
     
     init(): void {
-        console.log('this.app初始化了')
+        // console.log('this.app初始化了')
         this.app.use(express.static("static"));
         // this.app.use(express.static("view"));
         this.app.use(bodyParser.json());
@@ -69,5 +69,34 @@ export default class NodeServer{
             console.log("Listening at: http://localhost:" + port)
             // opn(uri)
         })
+
+        // 服务器重启，清空redis键值对
+        Redis.client.keys('*', function (err, keys) {
+            keys.forEach(e => { Redis.client.del(e) })
+            console.log('redis数据库键值对已被清除。')
+        });
+
+        // 能捕获到进程的代码错误异常退出、process.exit()方法退出
+        process.on('exit', (code) => {
+            console.log('进程退出。')
+            // console.log(`About to exit with code: ${code}`);
+            // 异步操作将不会执行，被强制丢弃
+            Redis.client.keys('*', function (err, keys) {
+                keys.forEach(e => {Redis.client.del(e)})
+                console.log(keys)
+                console.log('redis数据库键值对已被清除。')
+            });
+        });
+
+        // 捕获到操作者ctrl+c退出
+        process.on('SIGINT', function () {
+            // 调用强制退出
+            process.exit(100)
+        });
+
+        // this.app.close(function () {
+        //     console.log(‘stop listening’);
+        // })
+
     }
 }
