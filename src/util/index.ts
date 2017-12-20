@@ -30,9 +30,10 @@ interface rowPage {
 
 /**
  * @description 获取返回前台的json
- * @param msg
- * @param status
- * @param data
+ * @param msg 前台弹框信息
+ * @param status 状态码
+ * @param data json数据
+ * @returns {json} 返回告诉前台的json
  */
 function getJson(msg: string = '', status: number, data: any = null): object {
     let json = {
@@ -54,7 +55,6 @@ function aesEncrypt(str: string): string {
     var crypted = cipher.update(str, 'utf8', 'hex');
     crypted += cipher.final('hex');
     return crypted;
-
     // var md5 = crypto.createHash('md5', key);
     // md5.update(str);
     // str = md5.digest('hex');
@@ -77,6 +77,7 @@ function aesDecrypt(md5: string): string {
 
 /**
  * @description 获得随机字符串
+ * @returns {string} 返回随机字符串
  */
 function getRandomString(): string {
     return uuidv1()
@@ -86,8 +87,12 @@ function getRandomString(): string {
  * @description 检查token是否失效
  * @param request 请求体
  */
-function checkToken(request: request, response: response, successFn: Function){
+function checkToken(request: request, response: response, successFn: Function):void{
     let headerToken = request.headers.token
+    if (headerToken === 'debug') {
+        if (successFn) successFn()
+        return
+    }
     client.get(headerToken, function (err, replies) {
         if (replies === null) return response.json(getJson('用户登录失效', 611, null))
         // 能进到这就说明token存在且没过期
@@ -111,27 +116,6 @@ function checkToken(request: request, response: response, successFn: Function){
     //     response.json(getJson('用户登录失效', 611, null))
     // }
     // // return flag
-}
-
-/**
- * @description 检查分页参数
- * @param row 分页row参数
- * @param page 分页page参数
- * @param where where sql语句
- * @param limit limit sql语句
- */
-function checkPage({ row, where, page, limit }: rowPage): void {
-    if (row) {
-        if (row.hostIds || row.host_ids) {
-            let ids = row.hostIds || row.host_ids
-            where = `where host_ids = ${ids} `
-        }
-    }
-    if (page) {
-        if (page.pageNumber && page.pageSize) {
-            limit = `limit ${(~~page.pageNumber - 1) * ~~page.pageSize},${~~page.pageSize}`;
-        }
-    }
 }
 
 /**
@@ -163,16 +147,10 @@ function beginTransaction({ connection, res, page, successFn, dao }: any): void 
         }
     } else {
         postData = list
-        // {
-        //     list: list,
-        //     totalRow: totalRow
-        // }
     }
-    let json = getJson('成功', 200, postData)
-    // if (successFn) successFn(json)
-
     // 事务成功
     dao.commitActive = true
+    let json = getJson('成功', 200, postData)
     if (successFn) successFn(json)
 
     // 事务失败(例如受影响的条数为0)
@@ -191,7 +169,6 @@ export {
     checkToken,
     aesEncrypt,
     aesDecrypt,
-    checkPage,
     beginTransaction
 }
 

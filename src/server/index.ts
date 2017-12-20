@@ -25,6 +25,7 @@ import express = require('express')
 import bodyParser = require('body-parser')
 import session = require('express-session');
 import cookieParser = require('cookie-parser');
+import expressValidator = require('express-validator');
 let RedisStore = require('connect-redis')(session);
 // let MemcachedStore = require('connect-memcached')(session);
 import Router from '../router/index'
@@ -52,6 +53,7 @@ export default class NodeServer{
         // this.app.use(express.static("view"));
         this.app.use(bodyParser.json());
         this.app.use(cookieParser());
+        this.app.use(expressValidator());
         // 不用express-session了，太虎
         // this.app.use(session({
         //     secret: '123456',

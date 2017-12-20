@@ -9,13 +9,14 @@ import Login from '../web/Login'
 import Setting from '../web/Setting'
 import User from '../web/User'
 import BeeneedleModule from '../web/BeeneedleModule'
+import BeeneedlePelf from '../web/BeeneedlePelf'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
 import bodyParser = require('body-parser')
 import Redis from '../util/Redis'
-const { check, validationResult } = require('express-validator/check');
-const { matchedData, sanitize } = require('express-validator/filter');
+const { check, validationResult } = require('express-validator/check')
+const { matchedData, sanitize } = require('express-validator/filter')
 import fs = require("fs")
 
 
@@ -28,6 +29,7 @@ export default class Router {
     public setting: Setting = new Setting()
     public user: User = new User()
     public beeneedleModule: BeeneedleModule = new BeeneedleModule()
+    public beeneedlePelf: BeeneedlePelf = new BeeneedlePelf()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -45,12 +47,52 @@ export default class Router {
             next();
         })
 
+        // 获取黑白灰名单列表
+        this.app.post('/BeeneedlePelf/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    row: {
+                        notEmpty: true,
+                        errorMessage: '参数row不能为空'
+                    },
+                    'row.host_ids':{
+                        notEmpty: true,
+                        errorMessage: '参数row的字段host_ids不能为空',
+                    },
+                    'row.pelfstatus': {
+                        notEmpty: true,
+                        errorMessage: '参数row的字段pelfstatus不能为空',
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedlePelf.getData(request.body, response, next)
+            })
+        })
+
+        // 删除黑白灰名单
+        this.app.post('/BeeneedlePelf/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                let ids = request.params.ids
+                this.beeneedlePelf.deleteDataById(ids, response, next)
+            })
+        })
+
+        // 设置黑白灰名单
+        this.app.post('/BeeneedlePelf/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedlePelf.upDateData(request.body, response, next)
+            })
+        })
+
         // 获取系统设置项
         this.app.post('/setting/get', (request, response, next) => {
             checkToken(request, response, o => {
                 this.setting.getData(request.body, response, next)
             })
-
         })
 
         // 获取管理员上次登录信息
@@ -135,9 +177,34 @@ export default class Router {
         })
 
         // 添加主机
-        this.app.post('/host/post', (request, response, next) => {
+        this.app.post('/host/post', [
+            check('name')
+                .trim()
+                .not().isIn(['', undefined, null]).withMessage('请填写主机名！')
+                .isLength({ max: 32 }).withMessage('主机名不能大于32位字符！'),
+            check('ip')
+                .trim()
+                .not().isIn(['', undefined, null]).withMessage('请填写您的主机IP！')
+                .matches(/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/).withMessage('请填写一个合法的IP地址！'),
+            check('port')
+                .trim()
+                .not().isIn(['', undefined, null]).withMessage('请填写您的主机端口！'),
+            check('login_name')
+                .trim()
+                .not().isIn(['', undefined, null]).withMessage('请填写登录名！')
+                .isLength({ max: 32 }).withMessage('登录名不能大于32位字符！'),
+            check('login_pwd')
+                .trim()
+                .not().isIn(['', undefined, null]).withMessage('请填写登录密码！')
+                .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('设置的密码不符合要求！，请重新填写！')
+        ], (request, response, next) => {
             checkToken(request, response, o => {
-                console.log(request.body)
+                // console.log(request.body)
+                const errors = validationResult(request);
+                if (!errors.isEmpty()) {
+                    let msg = errors.array()[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
                 this.host.addData(request.body, response, next)
             })
         })
@@ -156,13 +223,12 @@ export default class Router {
             })
         })
 
-
         // 获取权限
         this.app.post('/role/getCur', (request, response, next) => {
             checkToken(request, response, o => {
-                if (request.headers.token === 'debug') return response.json(getJson('成功', 200, { login_name: 'root', login_pwd: 'admin123.com', username: '超级管理员' }))
+                if (request.headers.token === 'debug') return response.json(getJson('成功', 200, { login_name: 'root', zh_names: '超级管理员', ids: 0 }))
                 this.client.get("role", function (err, res) {
-                    if(err) return false
+                    if (err) return false
                     let role = JSON.parse(res)
                     let data = {
                         zh_names: role.username,
@@ -207,12 +273,13 @@ export default class Router {
         this.app.post('/user/post', [
             check('login_name')
                 .trim()
-                .isLength({ max: 32 }).withMessage('登录名不能大于32位字符！')
-                .not().isIn(['', undefined, null]).withMessage('请填写登录名！'),
+                .not().isIn(['', undefined, null]).withMessage('请填写登录名！')
+                .isLength({ max: 32 }).withMessage('登录名不能大于32位字符！'),
             // .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,24}$/).withMessage('login_name not match'),
             check('username')
                 .trim()
-                .not().isIn(['', undefined, null]).withMessage('请填写用户名！'),
+                .not().isIn(['', undefined, null]).withMessage('请填写用户名！')
+                .isLength({ max: 32 }).withMessage('用户名不能大于32位字符！'),
             check('email')
                 .trim()
                 .not().isIn(['', undefined, null]).withMessage('请填写您的邮箱！')
@@ -272,7 +339,7 @@ export default class Router {
             this.client.get("role", function (err, res) {
                 if (err) return false
                 let role = JSON.parse(res)
-                response.json((getJson('成功', 200, { role:role})))
+                response.json((getJson('成功', 200, { role: role })))
             })
 
             // 老版本登录

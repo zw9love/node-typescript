@@ -11,7 +11,7 @@
 import Dao from '../dao/index'
 // 1、
 import { autoGetData } from '../filters/index'
-import { getJson, beginTransaction, checkPage, getRandomString, aesEncrypt } from '../util/index'
+import { getJson, beginTransaction, getRandomString, aesEncrypt } from '../util/index'
 import { postData } from '../interface/index'
 import os = require('os')
 import fs = require('fs')
@@ -51,29 +51,79 @@ export default class Service {
      * @param successFn  成功执行的回调函数
      * @param errorFn 失败执行的回调函数
      */
-    getData(data: postData, successFn?: Function, errorFn?: Function): void {
-        let { page, row, size } = data
+    getData(postData: postData, successFn?: Function, errorFn?: Function): void {
+        let { page, row, size, query, sort } = postData
         let select = `SELECT * FROM ${this.tableName} `
         let count = `SELECT count(*) as sum FROM ${this.tableName} `
-        let where = ''
+        let where = ' where 1 = 1 '
         let limit = ''
+        let search = ' '
+        let sortSql = ' '
+        let pageSize = 0
+        let pageStart = 0
+
+        if (sort) {
+            let { col, order } = sort[0]
+            sortSql = `order by ${col} ${order}`
+        }
+
+        if (query) {
+            for (let i in query) {
+                if (query[i].trim() === '') continue
+                where += ` and ${i} LIKE '%${query[i]}%' `
+            }
+        }
+
         // 分页存在
         if (page) {
-            checkPage({ row, where, page, limit })
+            // checkPage({ row, where, page, limit })
+            pageSize = ~~page.pageSize
+            pageStart = (~~page.pageNumber - 1) * pageSize
+            limit = ` limit ${pageStart}, ${pageSize}`
         }
+        // size存在（排序查找功能）
         else if (size) {
-
+            pageSize = ~~size.size
+            pageStart = ~~size.beforeId
+            limit = ` limit ${pageStart}, ${pageSize}`
+            // 如果都不是，返回全部给你们
+        } else {
+            limit = ' '
         }
-        // 如果分页不存在
 
         let tsData = [
             { sql: count + where, dataArr: null },
-            { sql: select + where + limit, dataArr: null },
+            { sql: select + where + search + sortSql + limit, dataArr: null },
         ]
 
         // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
         this.dao.connectTransaction(tsData, (connection, res) => {
-            beginTransaction({ connection, res, page: page ? page : {}, successFn, dao: this.dao })
+            // beginTransaction({ connection, res, page: page ? page : {}, successFn, dao: this.dao })
+            let totalRow = res[0][0].sum
+            let list = res[1]
+            let postData: any = {}
+            if (page) {
+                postData = {
+                    list: list,
+                    totalRow: totalRow,
+                    totalPage: totalRow / ~~page.pageSize,
+                    pageNumber: ~~page.pageNumber,
+                    pageSize: ~~page.pageSize,
+                    firstPage: ~~page.pageNumber === 1 ? true : false,
+                    lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
+                }
+            } else if (size) {
+                postData = {
+                    list: list,
+                    totalRow: totalRow,
+                    size: { beforeId: pageStart + pageSize, size: pageSize, offset: "" }
+                }
+            } else {
+                postData = list
+            }
+            this.dao.commitActive = true
+            let json = getJson('成功', 200, postData)
+            if (successFn) successFn(json)
         }, errorFn)
     }
 
@@ -142,7 +192,7 @@ export default class Service {
     addData(json: json, successFn?: Function, errorFn?: Function): void {
         let sql = `INSERT INTO ${this.tableName} (host_ids, name, ip, port, os_type, os_version, os_arch, login_name, login_pwd, status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         let host_ids = getRandomString()
-        let arr = [host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), aesEncrypt(json.login_pwd), 1]
+        let arr = [host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), aesEncrypt(json.login_pwd), 0]
         // console.log(sql)
         let moduleSql = `INSERT INTO beeneedle_module (ids, host_ids, type, status) VALUES `
         for (let i = 0; i <= 6; i++) {

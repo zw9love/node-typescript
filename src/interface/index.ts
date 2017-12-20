@@ -9,8 +9,11 @@ interface postData {
     row?: {
         host_ids?: string
         hostIds?: string
+        pelfstatus?: string
     }
-    size?: {},
+    size?: any,
+    query?: any,
+    sort?: any,
     username?:string
     email?:string
     login_name?:string

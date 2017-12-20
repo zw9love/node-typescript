@@ -4,7 +4,7 @@
  */
 import Dao from '../dao/index'
 import { response, request, loginData } from '../interface/index'
-import { getJson, checkPage, beginTransaction, getRandomString, aesEncrypt } from '../util/index'
+import { getJson, beginTransaction, getRandomString, aesEncrypt } from '../util/index'
 import Redis from '../util/Redis'
 
 
@@ -20,26 +20,78 @@ export default class User {
      */
     getData(request: request, successFn?: Function, errorFn?: Function): void {
         Redis.client.get("role",  (err, res) => {
+            if (err) return false
             let select = `SELECT * FROM ${this.tableName} `
             let where = ` where username = ? `
             let count = `SELECT count(*) as sum FROM ${this.tableName}`
-            let limit = ''
-            if (err) return false
+            let limit = ' '
+            let search = ' '
+            let sortSql = ' '
+            let pageSize = 0
+            let pageStart = 0
             let role = JSON.parse(res)
             let username = role.username
-            let { row, page } = request.body
+            let { row, size, page, query, sort } = request.body
+
+            if (sort) {
+                let { col, order } = sort[0]
+                sortSql = `order by ${col} ${order}`
+            }
+
+            if (query) {
+                for (let i in query) {
+                    if (query[i].trim() === '') continue
+                    where += ` and ${i} LIKE '%${query[i]}%' `
+                }
+            }
+
+            // page分页存在
             if (page) {
-                checkPage({ row, where, page, limit })
+                pageSize = ~~page.pageSize
+                pageStart = (~~page.pageNumber - 1) * pageSize
+                limit = ` limit ${pageStart}, ${pageSize}`
+            }
+            // size存在（排序查找功能）
+            else if (size) {
+                pageSize = ~~size.size
+                pageStart = ~~size.beforeId
+                limit = ` limit ${pageStart}, ${pageSize}`
+                // 如果都不是，返回全部给你们
+            } else {
+                limit = ' '
             }
 
             let tsData = [
                 { sql: count + where, dataArr: username },
-                { sql: select + where + limit, dataArr: username },
+                { sql: select + where + search + sortSql + limit, dataArr: username },
             ]
 
             // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
             this.dao.connectTransaction(tsData, (connection, res) => {
-                beginTransaction({ connection, res, page: page ? page : {}, successFn, dao: this.dao })
+                // beginTransaction({ connection, res, page: page ? page : {}, successFn, dao: this.dao })
+                let totalRow = res[0][0].sum
+                let list = res[1]
+                let postData: any = {}
+                if (page) {
+                    postData = {
+                        list: list,
+                        totalRow: totalRow,
+                        totalPage: totalRow / ~~page.pageSize,
+                        pageNumber: ~~page.pageNumber,
+                        pageSize: ~~page.pageSize,
+                        firstPage: ~~page.pageNumber === 1 ? true : false,
+                        lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
+                    }
+                } else if (size) {
+                    postData = {
+                        list: list,
+                        totalRow: totalRow,
+                        size: { beforeId: pageStart + pageSize, size: pageSize, offset: "" }
+                    }
+                }
+                this.dao.commitActive = true
+                let json = getJson('成功', 200, postData)
+                if (successFn) successFn(json)
             }, errorFn)
 
         })
