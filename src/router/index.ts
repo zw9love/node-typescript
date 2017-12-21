@@ -12,6 +12,7 @@ import BeeneedleModule from '../web/BeeneedleModule'
 import BeeneedlePelf from '../web/BeeneedlePelf'
 import BeeneedleProcessSubject from '../web/BeeneedleProcessSubject'
 import BeeneedleProcessHost from '../web/BeeneedleProcessHost'
+import BeeneedleObjectLabel from '../web/BeeneedleObjectLabel'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -34,6 +35,7 @@ export default class Router {
     public beeneedlePelf: BeeneedlePelf = new BeeneedlePelf()
     public beeneedleProcessSubject: BeeneedleProcessSubject = new BeeneedleProcessSubject()
     public beeneedleProcessHost: BeeneedleProcessHost = new BeeneedleProcessHost()
+    public beeneedleObjectLabel: BeeneedleObjectLabel = new BeeneedleObjectLabel()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -181,6 +183,60 @@ export default class Router {
                     return response.json((getJson(msg, 606, null)))
                 }
                 this.beeneedleProcessHost.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取客体列表
+        this.app.post('/BeeneedleObjectLabel/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleObjectLabel.getData(request.body, response, next)
+            })
+        })
+
+        // 获取单个客体
+        this.app.post('/BeeneedleObjectLabel/get/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleObjectLabel.getDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 修改单个客体
+        this.app.post('/BeeneedleObjectLabel/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleObjectLabel.upDateData(request.body, response, next)
+            })
+        })
+
+        // 删除单个客体
+        this.app.post('/BeeneedleObjectLabel/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleObjectLabel.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 添加客体
+        this.app.post('/BeeneedleObjectLabel/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    type: {
+                        notEmpty: true,
+                        errorMessage: '参数type不能为空'
+                    },
+                    name: {
+                        notEmpty: true,
+                        errorMessage: '参数name不能为空'
+                    },
+                    path: {
+                        notEmpty: true,
+                        errorMessage: '参数path不能为空'
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedleObjectLabel.addData(request.body, response, next)
             })
         })
 
