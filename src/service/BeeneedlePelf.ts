@@ -89,7 +89,7 @@ export default class BeeneedlePelf {
                 postData = {
                     list: list,
                     totalRow: totalRow,
-                    size: { beforeId: pageStart + pageSize, size: pageSize, offset: "" }
+                    size: { beforeId: pageStart + pageSize, size: pageSize, offset: pageStart + pageSize }
                 }
             }
             this.dao.commitActive = true

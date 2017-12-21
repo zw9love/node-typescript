@@ -10,6 +10,8 @@ import Setting from '../web/Setting'
 import User from '../web/User'
 import BeeneedleModule from '../web/BeeneedleModule'
 import BeeneedlePelf from '../web/BeeneedlePelf'
+import BeeneedleProcessSubject from '../web/BeeneedleProcessSubject'
+import BeeneedleProcessHost from '../web/BeeneedleProcessHost'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -30,6 +32,8 @@ export default class Router {
     public user: User = new User()
     public beeneedleModule: BeeneedleModule = new BeeneedleModule()
     public beeneedlePelf: BeeneedlePelf = new BeeneedlePelf()
+    public beeneedleProcessSubject: BeeneedleProcessSubject = new BeeneedleProcessSubject()
+    public beeneedleProcessHost: BeeneedleProcessHost = new BeeneedleProcessHost()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -85,6 +89,98 @@ export default class Router {
         this.app.post('/BeeneedlePelf/put', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeneedlePelf.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取进程主体列表
+        this.app.post('/BeeneedleProcessSubject/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProcessSubject.getData(request.body, response, next)
+            })
+        })
+
+        // 获取单个进程主体
+        this.app.post('/BeeneedleProcessSubject/get/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                let host_ids = request.params.ids
+                this.beeneedleProcessSubject.getDataById(host_ids, response, next)
+            })
+        })
+
+        // 删除单个进程主体
+        this.app.post('/BeeneedleProcessSubject/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                let host_ids = request.params.ids
+                this.beeneedleProcessSubject.deleteDataById(host_ids, response, next)
+            })
+        })
+
+        // 添加进程主体
+        this.app.post('/BeeneedleProcessSubject/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    name: {
+                        notEmpty: true,
+                        errorMessage: '进程主体名不能为空'
+                    },
+                    path: {
+                        notEmpty: true,
+                        errorMessage: '进程路径不能为空',
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedleProcessSubject.addData(request.body, response, next)
+            })
+        })
+
+        // 修改进程主体
+        this.app.post('/BeeneedleProcessSubject/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProcessSubject.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取进程主体关联的主机
+        this.app.post('/BeeneedleProcessHost/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    row: {
+                        notEmpty: true,
+                        errorMessage: '参数row不能为空'
+                    },
+                    'row.process_ids': {
+                        notEmpty: true,
+                        errorMessage: '参数row的字段process_ids不能为空'
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedleProcessHost.getData(request.body, response, next)
+            })
+        })
+
+        // 修改进程主体关联的主机
+        this.app.post('/BeeneedleProcessHost/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    process_ids: {
+                        notEmpty: true,
+                        errorMessage: '参数process_ids不能为空'
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedleProcessHost.upDateData(request.body, response, next)
             })
         })
 

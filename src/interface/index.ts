@@ -9,6 +9,7 @@ interface postData {
     row?: {
         host_ids?: string
         hostIds?: string
+        process_ids?: string
         pelfstatus?: string
     }
     size?: any,

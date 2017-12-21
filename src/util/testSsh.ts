@@ -15,14 +15,14 @@ conn.on('ready', function () {
     console.log('进入了ready钩子函数')
 
     // 读取局域网系统文件
-    conn.sftp(function (err, sftp) {
-        if (err) throw err;
-        let start = new Date().getTime()
-        fs.createReadStream('C:/files/xmind-3.7.5.201709290120.exe').pipe(sftp.createWriteStream('/demo/xmind-3.7.5.hehe12.exe'))
-        // fs.createReadStream('C:/files/xmind-3.7.5.201709290120.exe').pipe(fs.createWriteStream('C:/files/xmind-3.7.5.hehe111.exe'))
-        let end = new Date().getTime()
-        console.log((end - start) + '毫秒')
-        conn.end()
+    // conn.sftp(function (err, sftp) {
+    //     if (err) throw err;
+    //     let start = new Date().getTime()
+    //     fs.createReadStream('C:/files/xmind-3.7.5.201709290120.exe').pipe(sftp.createWriteStream('/demo/xmind-3.7.5.hehe12.exe'))
+    //     // fs.createReadStream('C:/files/xmind-3.7.5.201709290120.exe').pipe(fs.createWriteStream('C:/files/xmind-3.7.5.hehe111.exe'))
+    //     let end = new Date().getTime()
+    //     console.log((end - start) + '毫秒')
+    //     conn.end()
         // 创建目录
         // sftp.mkdir('/demo/files', err => {
         //     if(err) console.log(err)
@@ -55,23 +55,25 @@ conn.on('ready', function () {
         //     console.dir(list);
         //     conn.end();
         // })
-    });
+    // });
 
     // 进入正常执行
-    // conn.exec('uptime', function (err, stream) {
-    //     if (err) throw err;
-    //     stream.on('close', function (code, signal) {
-    //         console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-    //         console.log('连接关闭')
-    //         conn.end();
-    //     }).on('data', function (data) {
-    //         console.log('STDOUT: ' + data);
-    //         console.log('拿到数据')
-    //     }).stderr.on('data', function (data) {
-    //         console.log('STDERR: ' + data);
-    //         console.log('出现错误')
-    //     });
-    // });
+    conn.exec('uptime', function (err, stream) {
+        if (err) throw err;
+        stream.on('close', function (code, signal) {
+            console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+            console.log('连接关闭')
+            conn.end();
+        }).on('data', function (data) {
+            console.log('STDOUT: ' + data);
+            console.log('拿到数据')
+        }).stderr.on('data', function (data) {
+            console.log('STDERR: ' + data);
+            console.log('出现错误')
+        });
+    });
+}).on('error', function (err) {
+    console.log('连接失败')
 }).connect({
     host: '192.168.0.140',
     port: '22',

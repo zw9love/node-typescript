@@ -15,6 +15,8 @@ import { getJson, beginTransaction, getRandomString, aesEncrypt } from '../util/
 import { postData } from '../interface/index'
 import os = require('os')
 import fs = require('fs')
+const Client = require('ssh2').Client
+const conn = new Client()
 // 2、
 // let { autoGetData } = require('../../filters/index')
 // let { getJson } = require('../../util/index')
@@ -116,7 +118,7 @@ export default class Service {
                 postData = {
                     list: list,
                     totalRow: totalRow,
-                    size: { beforeId: pageStart + pageSize, size: pageSize, offset: "" }
+                    size: { beforeId: pageStart + pageSize, size: pageSize, offset: pageStart + pageSize }
                 }
             } else {
                 postData = list
@@ -190,25 +192,52 @@ export default class Service {
      */
 
     addData(json: json, successFn?: Function, errorFn?: Function): void {
-        let sql = `INSERT INTO ${this.tableName} (host_ids, name, ip, port, os_type, os_version, os_arch, login_name, login_pwd, status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        let host_ids = getRandomString()
-        let arr = [host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), aesEncrypt(json.login_pwd), 0]
-        // console.log(sql)
-        let moduleSql = `INSERT INTO beeneedle_module (ids, host_ids, type, status) VALUES `
-        for (let i = 0; i <= 6; i++) {
-            let str = i == 6 ? `('${getRandomString()}', '${host_ids}', ${i}, 0)` : `('${getRandomString()}', '${host_ids}', ${i}, 0),`
-            moduleSql += str
-        }
-        let taskArr = [
-            { sql: sql, dataArr: arr },
-            { sql: moduleSql, dataArr: null },
-        ]
-        // 开启事务方法 添加主机的同时初始化主机模块数据
-        this.dao.connectTransaction(taskArr, (connection, res) => {
-            let affectedRows = res[0].affectedRows
-            let json = affectedRows > 0 ? getJson('添加成功', 200) : getJson('添加失败', 404)
-            if (successFn) successFn(json)
-        }, errorFn)
+        // 进库之前校验主机是否能连通
+        conn.on('ready',  () => {
+            let sql = `INSERT INTO ${this.tableName} (host_ids, name, ip, port, os_type, os_version, os_arch, login_name, login_pwd, status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            let host_ids = getRandomString()
+            let arr = [host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), aesEncrypt(json.login_pwd), 0]
+            // console.log(sql)
+            let moduleSql = `INSERT INTO beeneedle_module (ids, host_ids, type, status) VALUES `
+            for (let i = 0; i <= 6; i++) {
+                let str = i == 6 ? `('${getRandomString()}', '${host_ids}', ${i}, 0)` : `('${getRandomString()}', '${host_ids}', ${i}, 0),`
+                moduleSql += str
+            }
+            let taskArr = [
+                { sql: sql, dataArr: arr },
+                { sql: moduleSql, dataArr: null },
+            ]
+            // 开启事务方法 添加主机的同时初始化主机模块数据
+            this.dao.connectTransaction(taskArr, (connection, res) => {
+                let affectedRows = res[0].affectedRows
+                let json = affectedRows > 0 ? getJson('添加成功', 200) : getJson('添加失败', 404)
+                if (successFn) successFn(json)
+            }, errorFn)
+
+            // 进入正常执行
+            conn.exec('uptime', function (err, stream) {
+                if (err) throw err;
+                stream.on('close', function (code, signal) {
+                    console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+                    console.log('连接关闭')
+                    conn.end();
+                }).on('data', function (data) {
+                    console.log('STDOUT: ' + data);
+                    console.log('拿到数据')
+                }).stderr.on('data', function (data) {
+                    console.log('STDERR: ' + data);
+                    console.log('出现错误')
+                });
+            });
+        }).on('error', function (err) {
+            let data = getJson(`${json.ip}的主机无法连通成功。`, 606)
+            if (successFn) successFn(data)
+        }).connect({
+            host: json.ip,
+            port: json.port,
+            username: json.login_name,
+            password: json.login_pwd
+        })
     }
 
     /**
