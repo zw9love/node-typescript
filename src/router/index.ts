@@ -13,6 +13,8 @@ import BeeneedlePelf from '../web/BeeneedlePelf'
 import BeeneedleProcessSubject from '../web/BeeneedleProcessSubject'
 import BeeneedleProcessHost from '../web/BeeneedleProcessHost'
 import BeeneedleObjectLabel from '../web/BeeneedleObjectLabel'
+import BeeneedleObjectHost from '../web/BeeneedleObjectHost'
+import BeeneedleSoftware from '../web/BeeneedleSoftware'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -36,6 +38,8 @@ export default class Router {
     public beeneedleProcessSubject: BeeneedleProcessSubject = new BeeneedleProcessSubject()
     public beeneedleProcessHost: BeeneedleProcessHost = new BeeneedleProcessHost()
     public beeneedleObjectLabel: BeeneedleObjectLabel = new BeeneedleObjectLabel()
+    public beeneedleObjectHost: BeeneedleObjectHost = new BeeneedleObjectHost()
+    public beeneedleSoftware: BeeneedleSoftware = new BeeneedleSoftware()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -237,6 +241,87 @@ export default class Router {
                     return response.json((getJson(msg, 606, null)))
                 }
                 this.beeneedleObjectLabel.addData(request.body, response, next)
+            })
+        })
+
+
+        // 获取客体关联的主机
+        this.app.post('/BeeneedleObjectLabel/getHost', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleObjectHost.getData(request.body, response, next)
+            })
+        })
+
+        // 修改客体关联的主机
+        this.app.post('/BeeneedleObjectHost/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    object_ids: {
+                        notEmpty: true,
+                        errorMessage: '参数object_ids不能为空'
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedleObjectHost.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取软件安装列表
+        this.app.post('/SoftWare_SPEC/updown/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    row: {
+                        notEmpty: true,
+                        errorMessage: '参数row不能为空'
+                    },
+                    'row.platformIds': {
+                        notEmpty: true,
+                        errorMessage: '参数row的字段platformIds不能为空'
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedleSoftware.getData(request.body, response, next)
+            })
+        })
+
+        // 添加软件安装
+        this.app.post('/SoftWare_SPEC/updown/post', multipartMiddleware, (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    platform_ids: {
+                        notEmpty: true,
+                        errorMessage: '参数platform_ids不能为空'
+                    },
+                    group_name: {
+                        notEmpty: true,
+                        errorMessage: '参数group_name不能为空'
+                    },
+                    version: {
+                        notEmpty: true,
+                        errorMessage: '参数version不能为空'
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedleSoftware.addData(request, response, next)
+            })
+        })
+
+        // 删除软件安装
+        this.app.post('/SoftWare_SPEC/updown/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleSoftware.deleteDataById(request.params.ids, response, next)
             })
         })
 

@@ -10,7 +10,9 @@ interface postData {
         host_ids?: string
         hostIds?: string
         process_ids?: string
+        object_ids?: string
         pelfstatus?: string
+        platformIds?: string
     }
     size?: any,
     query?: any,
@@ -18,6 +20,7 @@ interface postData {
     username?:string
     email?:string
     login_name?:string
+    ids?:string
 }
 
 
@@ -51,6 +54,7 @@ interface request {
         store?:any
     },
     body: postData
+    files: any
     store?:any
 }
 
