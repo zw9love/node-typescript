@@ -18,15 +18,28 @@ export default class Setting {
      * @param errorFn 失败执行回调函数
      */
     getData(postData: postData, successFn?: Function, errorFn?: Function): void {
+        // select * from beeneedle_object_label where ids in (select object_ids from beeneedle_object_host where host_ids = '5a290bee1a2cad21fa8e8cb8')
         let { row, size, page, query, sort } = postData
         let select = `SELECT * FROM ${this.tableName} `
-        let where = ` where 1 = 1 `
+        let type = ~~row.type
+        let hostIds = row.host_ids || row.hostIds
+        let where = ' where 1 = 1 '
         let count = `SELECT count(*) as sum FROM ${this.tableName} `
         let limit = ' '
         let search = ' '
         let sortSql = ' '
         let pageSize = 0
         let pageStart = 0
+
+        if (type >= 0 && hostIds) {
+            let sql = ` select * from ${this.tableName} where ids in (select object_ids from beeneedle_object_host where host_ids = ?) and type = ? `
+            let dataArr = [hostIds, type]
+            this.dao.connectDatabase(sql, dataArr, res => {
+                let json = getJson('成功', 200, res)
+                if (successFn) successFn(json)
+            }, errorFn)
+            return 
+        }
 
         if (sort) {
             let { col, order } = sort[0]
@@ -57,8 +70,8 @@ export default class Setting {
         }
 
         let tsData = [
-            { sql: count + where, dataArr: [] },
-            { sql: select + where + search + sortSql + limit, dataArr: [] },
+            { sql: count + where, dataArr: null },
+            { sql: select + where + search + sortSql + limit, dataArr: null },
         ]
 
         // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
@@ -81,6 +94,10 @@ export default class Setting {
                     list: list,
                     totalRow: totalRow,
                     size: { beforeId: pageStart + pageSize, size: pageSize, offset: pageStart + pageSize }
+                }
+            } else {
+                postData = {
+                    list: list
                 }
             }
             this.dao.commitActive = true

@@ -15,6 +15,7 @@ import BeeneedleProcessHost from '../web/BeeneedleProcessHost'
 import BeeneedleObjectLabel from '../web/BeeneedleObjectLabel'
 import BeeneedleObjectHost from '../web/BeeneedleObjectHost'
 import BeeneedleSoftware from '../web/BeeneedleSoftware'
+import BeeneedleMac from '../web/BeeneedleMac'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -40,6 +41,7 @@ export default class Router {
     public beeneedleObjectLabel: BeeneedleObjectLabel = new BeeneedleObjectLabel()
     public beeneedleObjectHost: BeeneedleObjectHost = new BeeneedleObjectHost()
     public beeneedleSoftware: BeeneedleSoftware = new BeeneedleSoftware()
+    public beeneedleMac: BeeneedleMac = new BeeneedleMac()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -322,6 +324,20 @@ export default class Router {
         this.app.post('/SoftWare_SPEC/updown/delete/:ids', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeneedleSoftware.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 获取强制访问列表
+        this.app.post('/BeeneedleMac/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleMac.getData(request.body, response, next)
+            })
+        })
+
+        // 获取单个客体
+        this.app.post('/BeeneedleMac/get/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleMac.getDataById(request.params.ids, response, next)
             })
         })
 

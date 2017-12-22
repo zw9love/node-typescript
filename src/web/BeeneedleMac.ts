@@ -4,12 +4,12 @@
  */
 import { postData, response, moduleObj, request } from '../interface/index'
 import { getJson } from '../util/index'
-import Service from '../service/BeeneedleSoftware'
+import Service from '../service/BeeneedleMac'
 export default class Setting {
     public service = new Service()
     constructor() { }
     /**
-     * @description 获取进程主体列表
+     * @description 获取数据列表
      * @param postData 传递的参数
      * @param response 响应体
      * @param next 向下执行方法

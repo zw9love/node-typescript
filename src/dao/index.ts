@@ -125,7 +125,7 @@ export default class Dao {
                 // }
 
                 //提交
-                if (!this.commitActive) return
+                // if (!this.commitActive) return;
                 connection.commit(function (err) {
                     if (err) {
                         console.log(err);

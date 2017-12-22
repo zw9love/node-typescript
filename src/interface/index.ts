@@ -13,6 +13,8 @@ interface postData {
         object_ids?: string
         pelfstatus?: string
         platformIds?: string
+        type?: string | number
+        labelType?: string
     }
     size?: any,
     query?: any,

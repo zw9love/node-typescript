@@ -87,7 +87,7 @@ function getRandomString(): string {
  * @description 检查token是否失效
  * @param request 请求体
  */
-function checkToken(request: request, response: response, successFn: Function):void{
+function checkToken(request: request, response: response, successFn: Function): void {
     let headerToken = request.headers.token
     if (headerToken === 'debug') {
         if (successFn) successFn()
@@ -127,39 +127,86 @@ function checkToken(request: request, response: response, successFn: Function):v
  * @param dao dao对象
  */
 
-function beginTransaction({ connection, res, page, successFn, dao }: any): void {
-    let totalRow = res[0][0].sum
-    let list = res[1]
+function beginTransaction({ self, postData, where, dataArr, successFn, errorFn }: any): void {
+    let { row, size, page, query, sort } = postData
+    // let platformIds = row.platformIds
+    let select = `SELECT * FROM ${self.tableName} `
+    // let where = ` where platform_ids = ? `
+    let count = `SELECT count(*) as sum FROM ${self.tableName} `
+    let limit = ' '
+    let search = ' '
+    let sortSql = ' '
+    let pageSize = 0
+    let pageStart = 0
 
-    let { pageSize, pageNumber } = page
-
-    let postData: object
-
-    if (pageSize && pageNumber) {
-        postData = {
-            list: list,
-            totalRow: totalRow,
-            totalPage: totalRow / ~~page.pageSize,
-            pageNumber: ~~page.pageNumber,
-            pageSize: ~~page.pageSize,
-            firstPage: ~~page.pageNumber === 1 ? true : false,
-            lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
-        }
-    } else {
-        postData = list
+    if (sort) {
+        let { col, order } = sort[0]
+        sortSql = `order by ${col} ${order}`
     }
-    // 事务成功
-    dao.commitActive = true
-    let json = getJson('成功', 200, postData)
-    if (successFn) successFn(json)
 
-    // 事务失败(例如受影响的条数为0)
-    // dao.commitActive = false
-    // connection.rollback(o => {
-    //     console.log('出现错误,回滚!');
-    //     //释放资源
-    //     connection.end();
-    // });
+    if (query) {
+        for (let i in query) {
+            if (query[i].trim() === '') continue
+            where += ` and ${i} LIKE '%${query[i]}%' `
+        }
+    }
+
+    // page分页存在
+    if (page) {
+        pageSize = ~~page.pageSize
+        pageStart = (~~page.pageNumber - 1) * pageSize
+        limit = ` limit ${pageStart}, ${pageSize}`
+    }
+    // size存在（排序查找功能）
+    else if (size) {
+        pageSize = ~~size.size
+        pageStart = ~~size.beforeId
+        limit = ` limit ${pageStart}, ${pageSize}`
+        // 如果都不是，返回全部给你们
+    } else {
+        limit = ' '
+    }
+
+    let tsData = [
+        { sql: count + where, dataArr: dataArr },
+        { sql: select + where + search + sortSql + limit, dataArr: dataArr },
+    ]
+
+    // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
+    self.dao.connectTransaction(tsData, (connection, res) => {
+        let totalRow = res[0][0].sum
+        let list = res[1]
+        let postData: any = {}
+        if (page) {
+            postData = {
+                list: list,
+                totalRow: totalRow,
+                totalPage: totalRow / ~~page.pageSize,
+                pageNumber: ~~page.pageNumber,
+                pageSize: ~~page.pageSize,
+                firstPage: ~~page.pageNumber === 1 ? true : false,
+                lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
+            }
+        } else if (size) {
+            postData = {
+                list: list,
+                totalRow: totalRow,
+                size: { beforeId: pageStart + pageSize, size: pageSize, offset: pageStart + pageSize }
+            }
+        }
+        self.dao.commitActive = true
+        let json = getJson('成功', 200, postData)
+        if (successFn) successFn(json)
+
+        // 事务失败,手动回滚(例如受影响的条数为0)
+        // dao.commitActive = false
+        // connection.rollback(o => {
+        //     console.log('出现错误,回滚!');
+        //     //释放资源
+        //     connection.end();
+        // });
+
+    }, errorFn)
 }
 
 
