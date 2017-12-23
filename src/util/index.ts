@@ -88,20 +88,21 @@ function getRandomString(): string {
  * @param request 请求体
  */
 function checkToken(request: request, response: response, successFn: Function): void {
-    let headerToken = request.headers.token
-    if (headerToken === 'debug') {
-        if (successFn) successFn()
-        return
-    }
-    client.get(headerToken, function (err, replies) {
-        if (replies === null) return response.json(getJson('用户登录失效', 611, null))
-        // 能进到这就说明token存在且没过期
-        let login_name = replies
-        // console.log('login_name：' + login_name)
-        client.set(login_name, headerToken, 'EX', expired) // 过期时间单位是秒
-        client.set(headerToken, login_name, 'EX', expired) // 过期时间单位是秒
-        if (successFn) successFn()
-    });
+    if (successFn) successFn()
+    // let headerToken = request.headers.token
+    // if (headerToken === 'debug') {
+    //     if (successFn) successFn()
+    //     return
+    // }
+    // client.get(headerToken, function (err, replies) {
+    //     if (replies === null) return response.json(getJson('用户登录失效', 611, null))
+    //     // 能进到这就说明token存在且没过期
+    //     let login_name = replies
+    //     // console.log('login_name：' + login_name)
+    //     client.set(login_name, headerToken, 'EX', expired) // 过期时间单位是秒
+    //     client.set(headerToken, login_name, 'EX', expired) // 过期时间单位是秒
+    //     if (successFn) successFn()
+    // });
     // let sessionToken = request.session.token
     // // console.log(request.session.store)
     // // console.log('sessionid：' + request.session.id)

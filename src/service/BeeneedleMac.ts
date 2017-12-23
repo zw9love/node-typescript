@@ -9,7 +9,7 @@ import { postData, moduleObj } from '../interface/index'
 
 export default class Setting {
     public dao = new Dao()
-    private tableName: string = 'beeneedle_mac'
+    private tableName: string = ' beeneedle_mac '
     constructor() { }
     /**
      * @description 操作dao对象拿到setting数据
@@ -18,12 +18,91 @@ export default class Setting {
      * @param errorFn 失败执行回调函数
      */
     getData(postData: postData, successFn?: Function, errorFn?: Function): void {
+        let tableName = ' beeneedle_mac a LEFT JOIN beeneedle_object_label b on a.obj_ids = b.ids LEFT JOIN beeneedle_process_subject c on a.sub_ids = c.ids'
         let { row, size, page, query, sort } = postData
         let type = row.type
         let labelType = row.labelType
         let hostIds = row.host_ids || row.hostIds
-        let where = ` where type = ? and host_ids = ? `
-        beginTransaction({ self: this, successFn, errorFn, postData, dataArr: [type, hostIds], where })
+        let select = `SELECT a.ids, a.host_ids, a.type, a.sub_ids, a.obj_ids, a.privilege, b.name as object, c.name as subject FROM ${tableName} `
+        // let where = ` where obj_ids in (select ids from beeneedle_object_label where type = ? ) and type = ? and host_ids = ? `
+        let where = ` where a.type = ? and a.host_ids = ? and b.type = ? `
+        let count = `SELECT count(*) as sum FROM ${tableName} `
+        let limit = ' '
+        let search = ' '
+        let sortSql = ' '
+        let pageSize = 0
+        let pageStart = 0
+        let dataArr = [type, hostIds, labelType]
+        // let specialSql = `select name from beeneedle_object_label where ids in (SELECT obj_ids FROM ${this.tableName} ${where})`
+// select a.ids,a.host_ids,a.type,a.obj_ids,a.privilege,b.name as object from beeneedle_mac a LEFT JOIN beeneedle_object_label b on a.obj_ids = b.ids
+        if (sort) {
+            let { col, order } = sort[0]
+            sortSql = `order by ${col} ${order}`
+        }
+
+        if (query) {
+            for (let i in query) {
+                if (query[i].trim() === '') continue
+                where += ` and ${i} LIKE '%${query[i]}%' `
+            }
+        }
+
+        // page分页存在
+        if (page) {
+            pageSize = ~~page.pageSize
+            pageStart = (~~page.pageNumber - 1) * pageSize
+            limit = ` limit ${pageStart}, ${pageSize}`
+        }
+        // size存在（排序查找功能）
+        else if (size) {
+            pageSize = ~~size.size
+            pageStart = ~~size.beforeId
+            limit = ` limit ${pageStart}, ${pageSize}`
+            // 如果都不是，返回全部给你们
+        } else {
+            limit = ' '
+        }
+
+        // console.log(count + where)
+        let tsData = [
+            { sql: count + where, dataArr: dataArr },
+            { sql: select + where + search + sortSql + limit, dataArr: dataArr },
+            // { sql: specialSql, dataArr: dataArr }
+        ]
+
+        // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
+        this.dao.connectTransaction(tsData, (connection, res) => {
+            let totalRow = res[0][0].sum
+            let list = res[1]
+            // let objectData = res[2]
+            // // console.log(objectData)
+            // list.forEach((o, i) => {
+            //     o.object = objectData[i].name
+            // })
+            let postData: any = {}
+            if (page) {
+                postData = {
+                    list: list,
+                    totalRow: totalRow,
+                    totalPage: totalRow / ~~page.pageSize,
+                    pageNumber: ~~page.pageNumber,
+                    pageSize: ~~page.pageSize,
+                    firstPage: ~~page.pageNumber === 1 ? true : false,
+                    lastPage: ~~page.pageNumber === (totalRow / ~~page.pageSize) ? true : false
+                }
+            } else if (size) {
+                postData = {
+                    list: list,
+                    totalRow: totalRow,
+                    size: { beforeId: pageStart + pageSize, size: pageSize, offset: pageStart + pageSize }
+                }
+            }
+            this.dao.commitActive = true
+            let json = getJson('成功', 200, postData)
+            if (successFn) successFn(json)
+
+        }, errorFn)
+        // beginTransaction({ self: this, successFn, errorFn, postData, dataArr: [type, hostIds], where })
     }
 
     /**
@@ -33,7 +112,7 @@ export default class Setting {
      * @param errorFn 失败执行的回调函数
      */
     getDataById(ids: string, successFn?: Function, errorFn?: Function): void {
-        let select = `SELECT * FROM ${this.tableName} `
+        let select = `SELECT * FROM beeneedle_mac `
         let where = `where ids = ? `
         let sql = select + where
         this.dao.connectDatabase(sql, ids, res => {
@@ -67,10 +146,10 @@ export default class Setting {
      * @param errorFn 失败执行回调函数
      */
     upDateData(json: any, successFn?: Function, errorFn?: Function): void {
-        let sql = `UPDATE ${this.tableName} SET name = ?, path = ?, type = ?,sens_value = ?,reli_value = ? where ids = ?`;
-        let arr = [json.name, json.path, json.type, json.sens_value, json.reli_value, json.ids]
+        let sql = `UPDATE ${this.tableName} SET privilege = ?, obj_ids = ?, sub_ids =? where ids = ?`;
+        let arr = [json.privilege, json.obj_ids, json.sub_ids, json.ids]
         this.dao.connectDatabase(sql, arr, ({ affectedRows }) => {
-            let json = affectedRows > 0 ? getJson('修改成功', 200) : getJson('修改失败', 404)
+            let json = affectedRows === 1 ? getJson('修改成功', 200) : getJson('修改失败', 404)
             if (successFn) successFn(json)
         }, errorFn)
     }
@@ -83,9 +162,9 @@ export default class Setting {
     */
 
     addData(json: any, successFn?: Function, errorFn?: Function): void {
-        let sql = `INSERT INTO ${this.tableName} (ids, group_name, version, platform_ids) VALUES ( ?, ?, ?, ?) `
+        let sql = `INSERT INTO ${this.tableName} (ids, host_ids, type, obj_ids, sub_ids, privilege) VALUES ( ?, ?, ?, ?, ?, ?) `
         let ids = getRandomString()
-        let arr = [ids, json.group_name, json.version, json.platform_ids]
+        let arr = [ids, json.host_ids, json.type, json.obj_ids, json.sub_ids, json.privilege]
         this.dao.connectDatabase(sql, arr, res => {
             if (successFn) successFn(res)
         })

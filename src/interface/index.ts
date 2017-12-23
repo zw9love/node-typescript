@@ -22,7 +22,8 @@ interface postData {
     username?:string
     email?:string
     login_name?:string
-    ids?:string
+    ids?:string,
+    type?:string | number
 }
 
 
@@ -56,6 +57,9 @@ interface request {
         store?:any
     },
     body: postData
+    params: {
+        type?: string | number
+    }
     files: any
     store?:any
 }
