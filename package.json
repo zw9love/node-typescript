@@ -30,6 +30,8 @@
     "express-validator": "^4.3.0",
     "json-loader": "^0.5.7",
     "mysql": "^2.15.0",
+    "nodemailer": "^4.4.1",
+    "nodemailer-smtp-transport": "^2.7.4",
     "opn": "^5.1.0",
     "redis": "^2.8.0",
     "require": "^2.4.20",

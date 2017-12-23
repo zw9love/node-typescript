@@ -5,10 +5,35 @@
  */
 import NodeServer from './server/index'
 new NodeServer()
+
+// ssh连接测试
 // require('./util/testSsh')
+
+// redis测试
 // require('./util/testRedis')
 
-// import crypto = require('crypto');  //加载加密文件
+// 发送邮件测试
+// import Mail from './util/Mail'
+// let mail = new Mail()
+// mail.sendMail({
+//     recipient:'823334587@qq.com',
+//     title:'圣诞大礼哦，点进来看看啊', 
+//     text:'圣诞快乐，有附件。',
+//     // html:'<h1>Hi, weiwei,这是一封测试邮件111222333</h1>'
+//     files:[
+//         {
+//             filename:'config.json',
+//             path:'./src/dao/config.json' // 当前路径是项目根路径
+//         },
+//         {
+//             filename:'index.ts',
+//             path:'./src/dao/index.ts'
+//         }
+//     ]
+// })
+
+// 获取加密密码
+// import crypto = require('crypto');
 // const key = 'zengwei'
 // function aesEncrypt(str: string): string {
 //     const cipher = crypto.createCipher('aes192', key);
