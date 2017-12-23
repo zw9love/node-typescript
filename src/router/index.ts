@@ -18,6 +18,7 @@ import BeeneedleSoftware from '../web/BeeneedleSoftware'
 import BeeneedleMac from '../web/BeeneedleMac'
 import BeeneedleComplete from '../web/BeeneedleComplete'
 import BeeeyeSafeLib from '../web/BeeeyeSafeLib'
+import BeeneedleGlobalAudit from '../web/BeeneedleGlobalAudit'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -46,6 +47,7 @@ export default class Router {
     public beeneedleMac: BeeneedleMac = new BeeneedleMac()
     public beeneedleComplete: BeeneedleComplete = new BeeneedleComplete()
     public beeeyeSafeLib: BeeeyeSafeLib = new BeeeyeSafeLib()
+    public beeneedleGlobalAudit: BeeneedleGlobalAudit = new BeeneedleGlobalAudit()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -460,6 +462,34 @@ export default class Router {
         this.app.post('/bl/linux/put/', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeeyeSafeLib.upDateLinuxDataBatch(request.body, response, next)
+            })
+        })
+
+        // 获取策略加载审计列表
+        this.app.post('/BeeneedleGlobalAudit/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleGlobalAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 修改单个策略加载审计
+        this.app.post('/BeeneedleGlobalAudit/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleGlobalAudit.upDateDataById(request.body, response, next)
+            })
+        })
+
+        // 批量修改打开策略加载审计
+        this.app.post('/BeeneedleGlobalAudit/enableAll', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleGlobalAudit.upDateDataBatch(request.body, response, next)
+            })
+        })
+
+        // 批量修改关闭策略加载审计
+        this.app.post('/BeeneedleGlobalAudit/disableAll', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleGlobalAudit.upDateDataBatch(request.body, response, next)
             })
         })
 

@@ -154,11 +154,13 @@ export default class Host {
 
     deleteData(idsArr: string | Array<string>, successFn?: Function, errorFn?: Function): void {
         let sql = idsArr.length >= 0 ? `DELETE FROM ${this.tableName} where host_ids in (?)` : `DELETE FROM ${this.tableName} where host_ids = ?`;
-        let moduleSql = 'DELETE FROM beeneedle_module where host_ids = ?'
+        let moduleSql = 'DELETE FROM beeneedle_module where host_ids in (?)'
+        let policyAuditSql = 'DELETE FROM beeneedle_global_audit where host_ids in (?)'
 
         let taskArr = [
             { sql: sql, dataArr: idsArr },
             { sql: moduleSql, dataArr: idsArr },
+            { sql: policyAuditSql, dataArr: idsArr },
         ]
         // 开启事务方法 删除主机的同时，删除主机模块数据
         this.dao.connectTransaction(taskArr, (connection, res) => {
@@ -193,7 +195,7 @@ export default class Host {
 
     addData(json: json, successFn?: Function, errorFn?: Function): void {
         // 进库之前校验主机是否能连通
-        conn.on('ready',  () => {
+        // conn.on('ready',  () => {
             let sql = `INSERT INTO ${this.tableName} (host_ids, name, ip, port, os_type, os_version, os_arch, login_name, login_pwd, status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             let host_ids = getRandomString()
             let arr = [host_ids, autoGetData(json.name), autoGetData(json.ip), autoGetData(json.port), autoGetData(json.os_type), autoGetData(json.os_version), autoGetData(json.os_arch), autoGetData(json.login_name), aesEncrypt(json.login_pwd), 0]
@@ -203,9 +205,18 @@ export default class Host {
                 let str = i == 6 ? `('${getRandomString()}', '${host_ids}', ${i}, 0)` : `('${getRandomString()}', '${host_ids}', ${i}, 0),`
                 moduleSql += str
             }
+
+            let policyAuditSql = `INSERT INTO beeneedle_global_audit (ids, host_ids, type, result) VALUES `
+            for (let i = 0; i <= 6; i++) {
+                let str = i == 6 ? `('${getRandomString()}', '${host_ids}', ${i}, 0)` : `('${getRandomString()}', '${host_ids}', ${i}, 0),`
+                policyAuditSql += str
+            }
+            // console.log(policyAuditSql)
+
             let taskArr = [
                 { sql: sql, dataArr: arr },
                 { sql: moduleSql, dataArr: null },
+                { sql: policyAuditSql, dataArr: null },
             ]
             // 开启事务方法 添加主机的同时初始化主机模块数据
             this.dao.connectTransaction(taskArr, (connection, res) => {
@@ -215,29 +226,29 @@ export default class Host {
             }, errorFn)
 
             // 进入正常执行
-            conn.exec('uptime', function (err, stream) {
-                if (err) throw err;
-                stream.on('close', function (code, signal) {
-                    console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-                    console.log('连接关闭')
-                    conn.end();
-                }).on('data', function (data) {
-                    console.log('STDOUT: ' + data);
-                    console.log('拿到数据')
-                }).stderr.on('data', function (data) {
-                    console.log('STDERR: ' + data);
-                    console.log('出现错误')
-                });
-            });
-        }).on('error', function (err) {
-            let data = getJson(`${json.ip}的主机无法连通成功。`, 606)
-            if (successFn) successFn(data)
-        }).connect({
-            host: json.ip,
-            port: json.port,
-            username: json.login_name,
-            password: json.login_pwd
-        })
+            // conn.exec('uptime', function (err, stream) {
+            //     if (err) throw err;
+            //     stream.on('close', function (code, signal) {
+            //         console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+            //         console.log('连接关闭')
+            //         conn.end();
+            //     }).on('data', function (data) {
+            //         console.log('STDOUT: ' + data);
+            //         console.log('拿到数据')
+            //     }).stderr.on('data', function (data) {
+            //         console.log('STDERR: ' + data);
+            //         console.log('出现错误')
+            //     });
+            // });
+        // }).on('error', function (err) {
+        //     let data = getJson(`${json.ip}的主机无法连通成功。`, 606)
+        //     if (successFn) successFn(data)
+        // }).connect({
+        //     host: json.ip,
+        //     port: json.port,
+        //     username: json.login_name,
+        //     password: json.login_pwd
+        // })
     }
 
     /**
@@ -290,13 +301,15 @@ export default class Host {
      */
     getSystems(data: object, successFn?: Function, errorFn?: Function): void {
         // 根据操作系统的不同拿到不同的路径
-        let path = os.platform().toLowerCase().search('win') === -1 ? '/usr/local/share/lpdata/client/' : 'C:/systems'
-        fs.readdir(path, (err, data) => {
-            if (err) return console.error(err);
-            // console.log("异步读取: " + data.toString());
-            let postData = this.handleData(data)
-            if (successFn) successFn(postData)
-        })
+        // let path = os.platform().toLowerCase().search('win') === -1 ? '/usr/local/share/lpdata/client/' : 'C:/systems'
+        // fs.readdir(path, (err, data) => {
+        //     if (err) return console.error(err);
+        //     // console.log("异步读取: " + data.toString());
+        //     let postData = this.handleData(data)
+        //     if (successFn) successFn(postData)
+        // })
+
+        if (successFn) successFn(null)
     }
 
     /**
