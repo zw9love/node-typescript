@@ -7,7 +7,7 @@ import { autoGetData } from '../filters/index'
 import { getJson, getRandomString } from '../util/index'
 import { postData, moduleObj } from '../interface/index'
 
-export default class Setting {
+export default class BeeneedleProcessHost {
     public dao = new Dao()
     private tableName: string = 'beeneedle_process_host'
     constructor() { }

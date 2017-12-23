@@ -194,6 +194,8 @@ function beginTransaction({ self, postData, where, dataArr, successFn, errorFn }
                 totalRow: totalRow,
                 size: { beforeId: pageStart + pageSize, size: pageSize, offset: pageStart + pageSize }
             }
+        } else{
+            postData = list
         }
         self.dao.commitActive = true
         let json = getJson('成功', 200, postData)

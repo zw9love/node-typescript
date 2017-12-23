@@ -40,7 +40,7 @@ interface json {
     os_arch?: string
 }
 
-export default class Service {
+export default class Host {
     public dao = new Dao()
     private tableName: string = 'beeeye_host'
 

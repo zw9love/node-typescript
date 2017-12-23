@@ -7,7 +7,7 @@ import Dao from '../dao/index'
 import { getJson, getRandomString,aesEncrypt } from '../util/index'
 import { loginData } from '../interface/index'
 
-export default class Service {
+export default class Login {
     public dao = new Dao()
     private tableName: string = 'common_user'
     private userData: Array<loginData> = [

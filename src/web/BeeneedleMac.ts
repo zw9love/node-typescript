@@ -5,7 +5,7 @@
 import { postData, response, moduleObj, request } from '../interface/index'
 import { getJson } from '../util/index'
 import Service from '../service/BeeneedleMac'
-export default class Setting {
+export default class BeeneedleMac {
     public service = new Service()
     constructor() { }
     /**

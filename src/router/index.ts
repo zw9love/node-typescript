@@ -17,6 +17,7 @@ import BeeneedleObjectHost from '../web/BeeneedleObjectHost'
 import BeeneedleSoftware from '../web/BeeneedleSoftware'
 import BeeneedleMac from '../web/BeeneedleMac'
 import BeeneedleComplete from '../web/BeeneedleComplete'
+import BeeeyeSafeLib from '../web/BeeeyeSafeLib'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -44,6 +45,7 @@ export default class Router {
     public beeneedleSoftware: BeeneedleSoftware = new BeeneedleSoftware()
     public beeneedleMac: BeeneedleMac = new BeeneedleMac()
     public beeneedleComplete: BeeneedleComplete = new BeeneedleComplete()
+    public beeeyeSafeLib: BeeeyeSafeLib = new BeeeyeSafeLib()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -416,6 +418,48 @@ export default class Router {
         this.app.post('/BeeneedleIntegrity/check', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeneedleComplete.check(request.body, response, next)
+            })
+        })
+
+        // 获取windows安全库列表
+        this.app.post('/bl/win/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.getWindowsData(request.body, response, next)
+            })
+        })
+
+        // 获取linux安全库列表
+        this.app.post('/bl/linux/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.getLinuxData(request.body, response, next)
+            })
+        })
+
+        // 修改单个windows安全库列表
+        this.app.post('/bl/win/put/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.upDateWindowsDataById(request.body, response, next)
+            })
+        })
+
+        // 修改单个linux安全库列表
+        this.app.post('/bl/linux/put/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.upDateLinuxDataById(request.body, response, next)
+            })
+        })
+
+        // 批量修改windows安全库列表
+        this.app.post('/bl/win/put/', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.upDateWindowsDataBatch(request.body, response, next)
+            })
+        })
+
+        // 批量修改linux安全库列表
+        this.app.post('/bl/linux/put/', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.upDateLinuxDataBatch(request.body, response, next)
             })
         })
 
