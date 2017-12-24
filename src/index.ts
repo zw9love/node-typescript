@@ -7,6 +7,9 @@
 import NodeServer from './server/index'
 new NodeServer()
 
+// 命令行测试
+// require('./util/testChildProcess')
+
 // ssh连接测试
 // require('./util/testSsh')
 

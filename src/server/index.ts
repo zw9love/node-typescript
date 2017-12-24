@@ -29,24 +29,24 @@ import expressValidator = require('express-validator');
 let RedisStore = require('connect-redis')(session);
 // let MemcachedStore = require('connect-memcached')(session);
 import Router from '../router/index'
-import {getRandomString} from '../util/index'
+import { getRandomString } from '../util/index'
 import Redis from '../util/Redis'
 let app = express();
 
 // let router = new Router()
-export default class NodeServer{
+export default class NodeServer {
     public app = app
     public router = new Router(this.app)
     public storeOption: object = {
-        host: 'localhost', 
+        host: 'localhost',
         port: 6379,
         logErrors: true
     }
 
-    constructor(){
+    constructor() {
         this.init()
     }
-    
+
     init(): void {
         // console.log('this.app初始化了')
         this.app.use(express.static("static"));
@@ -84,7 +84,7 @@ export default class NodeServer{
             // console.log(`About to exit with code: ${code}`);
             // 异步操作将不会执行，被强制丢弃
             Redis.client.keys('*', function (err, keys) {
-                keys.forEach(e => {Redis.client.del(e)})
+                keys.forEach(e => { Redis.client.del(e) })
                 console.log(keys)
                 console.log('redis数据库键值对已被清除。')
             });
@@ -94,6 +94,14 @@ export default class NodeServer{
         process.on('SIGINT', function () {
             // 调用强制退出
             process.exit(100)
+        });
+
+        // 监听进程异常
+        process.on('uncaughtException', function (err) {
+            //打印出错误
+            console.log(err)
+            //打印出错误的调用栈方便调试
+            console.log(err.stack)
         });
 
         // this.app.close(function () {
