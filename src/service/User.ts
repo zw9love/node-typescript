@@ -66,7 +66,7 @@ export default class User {
                 { sql: select + where + search + sortSql + limit, dataArr: username },
             ]
 
-            // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
+            // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）111
             this.dao.connectTransaction(tsData, (connection, res) => {
                 // beginTransaction({ connection, res, page: page ? page : {}, successFn, dao: this.dao })
                 let totalRow = res[0][0].sum

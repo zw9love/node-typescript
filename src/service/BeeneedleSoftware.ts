@@ -7,7 +7,7 @@ import { autoGetData } from '../filters/index'
 import { getJson, getRandomString, beginTransaction } from '../util/index'
 import { postData, moduleObj } from '../interface/index'
 
-export default class Setting {
+export default class BeeneedleSoftware {
     public dao = new Dao()
     private tableName: string = 'common_software_group'
     constructor() { }

@@ -7,7 +7,7 @@ import { autoGetData } from '../filters/index'
 import { getJson } from '../util/index'
 import { postData, moduleObj } from '../interface/index'
 
-export default class Setting {
+export default class BeeneedleModule {
     public dao = new Dao()
     private tableName: string = 'beeneedle_module'
     constructor() { }

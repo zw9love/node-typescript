@@ -7,7 +7,7 @@ import { autoGetData } from '../filters/index'
 import { getJson, getRandomString } from '../util/index'
 import { postData, moduleObj } from '../interface/index'
 
-export default class Setting {
+export default class BeeneedleProcessSubject {
     public dao = new Dao()
     private tableName: string = 'beeneedle_process_subject'
     constructor() { }
@@ -22,11 +22,24 @@ export default class Setting {
         let select = `SELECT * FROM ${this.tableName} `
         let where = ` where 1 = 1 `
         let count = `SELECT count(*) as sum FROM ${this.tableName} `
+        let hostIds = row.host_ids || row.hostIds
+        let type = row.type
         let limit = ' '
         let search = ' '
         let sortSql = ' '
         let pageSize = 0
         let pageStart = 0
+
+        if (type >= 0) {
+            let sql = ` select * from ${this.tableName} where ids in (select process_ids from beeneedle_process_host where host_ids = ?)`
+            let dataArr = [hostIds]
+            this.dao.connectDatabase(sql, dataArr, res => {
+                let json = getJson('成功', 200, res)
+                if (successFn) successFn(json)
+            }, errorFn)
+            return 
+        }
+
 
         if (sort) {
             let { col, order } = sort[0]

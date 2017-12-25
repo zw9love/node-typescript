@@ -7,9 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "start": "node build/index.js",
-    "dev": "concurrently \"npm run watchTs\" \"npm run watchServer\"",
-    "watchTs": "tsc",
-    "watchServer": "supervisor build/index.js"
+    "dev": "concurrently \"npm run tsc\" \"npm run supervisor\"",
+    "tsc": "tsc",
+    "supervisor": "supervisor build/index.js",
+    "forever": "forever start -l node.log -a build/index.js",
+    "pm2": "pm2 start build/index.js --name=\"node-server\" --watch"
   },
   "author": "zw9love",
   "license": "ISC",
@@ -31,6 +33,8 @@
     "json-loader": "^0.5.7",
     "mongodb": "^3.0.0-rc0",
     "mysql": "^2.15.0",
+    "nodemailer": "^4.4.1",
+    "nodemailer-smtp-transport": "^2.7.4",
     "opn": "^5.1.0",
     "redis": "^2.8.0",
     "require": "^2.4.20",

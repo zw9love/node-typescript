@@ -7,7 +7,7 @@ import { autoGetData } from '../filters/index'
 import { getJson, getRandomString } from '../util/index'
 import { postData, moduleObj } from '../interface/index'
 
-export default class Setting {
+export default class BeeneedleObjectLabel {
     public dao = new Dao()
     private tableName: string = 'beeneedle_object_label'
     constructor() { }
@@ -21,7 +21,7 @@ export default class Setting {
         // select * from beeneedle_object_label where ids in (select object_ids from beeneedle_object_host where host_ids = '5a290bee1a2cad21fa8e8cb8')
         let { row, size, page, query, sort } = postData
         let select = `SELECT * FROM ${this.tableName} `
-        let type = ~~row.type
+        let type = row.type
         let hostIds = row.host_ids || row.hostIds
         let where = ' where 1 = 1 '
         let count = `SELECT count(*) as sum FROM ${this.tableName} `
@@ -30,8 +30,7 @@ export default class Setting {
         let sortSql = ' '
         let pageSize = 0
         let pageStart = 0
-
-        if (type >= 0 && hostIds) {
+        if (type >= 0) {
             let sql = ` select * from ${this.tableName} where ids in (select object_ids from beeneedle_object_host where host_ids = ?) and type = ? `
             let dataArr = [hostIds, type]
             this.dao.connectDatabase(sql, dataArr, res => {
@@ -169,7 +168,7 @@ export default class Setting {
     addData(json: any, successFn?: Function, errorFn?: Function): void {
         let sql = `INSERT INTO ${this.tableName} (ids, name, path, type, sens_value, reli_value) VALUES ( ?, ?, ?, ?, ?, ?) `
         let ids = getRandomString()
-        let arr = [ids, json.name, json.path, json.type, 150, 150]
+        let arr = [ids, json.name, json.path, json.type, json.sens_value, json.reli_value]
         let checkSql = `SELECT count(*) as sum FROM ${this.tableName} where name = ?`
         this.dao.connectDatabase(checkSql, json.name, res => {
             if (res[0].sum > 0) {

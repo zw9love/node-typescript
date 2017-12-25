@@ -16,6 +16,9 @@ import BeeneedleObjectLabel from '../web/BeeneedleObjectLabel'
 import BeeneedleObjectHost from '../web/BeeneedleObjectHost'
 import BeeneedleSoftware from '../web/BeeneedleSoftware'
 import BeeneedleMac from '../web/BeeneedleMac'
+import BeeneedleComplete from '../web/BeeneedleComplete'
+import BeeeyeSafeLib from '../web/BeeeyeSafeLib'
+import BeeneedleGlobalAudit from '../web/BeeneedleGlobalAudit'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -42,6 +45,9 @@ export default class Router {
     public beeneedleObjectHost: BeeneedleObjectHost = new BeeneedleObjectHost()
     public beeneedleSoftware: BeeneedleSoftware = new BeeneedleSoftware()
     public beeneedleMac: BeeneedleMac = new BeeneedleMac()
+    public beeneedleComplete: BeeneedleComplete = new BeeneedleComplete()
+    public beeeyeSafeLib: BeeeyeSafeLib = new BeeeyeSafeLib()
+    public beeneedleGlobalAudit: BeeneedleGlobalAudit = new BeeneedleGlobalAudit()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -334,17 +340,156 @@ export default class Router {
             })
         })
 
-        // 获取单个客体
+        // 获取单个敏感资源访控
         this.app.post('/BeeneedleMac/get/:ids', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeneedleMac.getDataById(request.params.ids, response, next)
             })
         })
 
-        // 获取系统设置项
-        this.app.post('/setting/get', (request, response, next) => {
+        // 增加敏感资源访控
+        this.app.post('/BeeneedleMac/post', (request, response, next) => {
             checkToken(request, response, o => {
-                this.setting.getData(request.body, response, next)
+                this.beeneedleMac.addData(request.body, response, next)
+            })
+        })
+
+        // 修改敏感资源访控
+        this.app.post('/BeeneedleMac/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleMac.upDateData(request.body, response, next)
+            })
+        })
+
+        // 删除敏感资源访控
+        this.app.post('/BeeneedleMac/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleMac.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 获取完整性列表
+        this.app.post('/BeeneedleIntegrity/get/:type', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleComplete.getData(request, response, next)
+            })
+        })
+
+        // 删除完整性
+        this.app.post('/BeeneedleIntegrity/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleComplete.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 增加完整性
+        this.app.post('/BeeneedleIntegrity/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                request.checkBody({
+                    host_ids: {
+                        notEmpty: true,
+                        errorMessage: '参数host_ids不能为空'
+                    },
+                    type: {
+                        notEmpty: true,
+                        errorMessage: '参数type不能为空'
+                    },
+                    file_type: {
+                        notEmpty: true,
+                        errorMessage: '参数file_type不能为空'
+                    },
+                    name: {
+                        notEmpty: true,
+                        errorMessage: '名称不能为空'
+                    },
+                    full_path: {
+                        notEmpty: true,
+                        errorMessage: '路径不能为空'
+                    }
+                })
+                var errors = request.validationErrors()
+                if (errors) {
+                    let msg = errors[0].msg
+                    return response.json((getJson(msg, 606, null)))
+                }
+                this.beeneedleComplete.addData(request.body, response, next)
+            })
+        })
+
+        // 检查完整性
+        this.app.post('/BeeneedleIntegrity/check', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleComplete.check(request.body, response, next)
+            })
+        })
+
+        // 获取windows安全库列表
+        this.app.post('/bl/win/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.getWindowsData(request.body, response, next)
+            })
+        })
+
+        // 获取linux安全库列表
+        this.app.post('/bl/linux/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.getLinuxData(request.body, response, next)
+            })
+        })
+
+        // 修改单个windows安全库列表
+        this.app.post('/bl/win/put/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.upDateWindowsDataById(request.body, response, next)
+            })
+        })
+
+        // 修改单个linux安全库列表
+        this.app.post('/bl/linux/put/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.upDateLinuxDataById(request.body, response, next)
+            })
+        })
+
+        // 批量修改windows安全库列表
+        this.app.post('/bl/win/put/', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.upDateWindowsDataBatch(request.body, response, next)
+            })
+        })
+
+        // 批量修改linux安全库列表
+        this.app.post('/bl/linux/put/', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeSafeLib.upDateLinuxDataBatch(request.body, response, next)
+            })
+        })
+
+        // 获取策略加载审计列表
+        this.app.post('/BeeneedleGlobalAudit/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleGlobalAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 修改单个策略加载审计
+        this.app.post('/BeeneedleGlobalAudit/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleGlobalAudit.upDateDataById(request.body, response, next)
+            })
+        })
+
+        // 批量修改打开策略加载审计
+        this.app.post('/BeeneedleGlobalAudit/enableAll', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleGlobalAudit.upDateDataBatch(request.body, response, next)
+            })
+        })
+
+        // 批量修改关闭策略加载审计
+        this.app.post('/BeeneedleGlobalAudit/disableAll', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleGlobalAudit.upDateDataBatch(request.body, response, next)
             })
         })
 

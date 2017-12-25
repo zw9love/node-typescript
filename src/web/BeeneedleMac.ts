@@ -5,7 +5,7 @@
 import { postData, response, moduleObj, request } from '../interface/index'
 import { getJson } from '../util/index'
 import Service from '../service/BeeneedleMac'
-export default class Setting {
+export default class BeeneedleMac {
     public service = new Service()
     constructor() { }
     /**
@@ -51,9 +51,8 @@ export default class Setting {
      * @param next 向下执行方法
      */
     upDateData(postData: any, response: response, next: Function): void {
-        this.service.upDateData(postData, ({ affectedRows }) => {
-            if (affectedRows === postData.length) return response.json(getJson('成功', 200, null))
-            response.json(getJson('修改模块失败', 404, null))
+        this.service.upDateData(postData, res => {
+            response.json(res)
         }, next)
     }
 
@@ -63,10 +62,7 @@ export default class Setting {
     * @param response 响应体
     * @param next 向下执行方法
     */
-    addData(request: request, response: response, next: Function): void {
-        let json = request.body
-        let file = request.files.file
-        // console.log(file)
+    addData(json:any, response: response, next: Function): void {
         this.service.addData(json, res => {
             response.json(getJson('成功', 200, null))
         }, next)
