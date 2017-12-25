@@ -29,6 +29,7 @@
     "express-session": "^1.15.6",
     "express-validator": "^4.3.0",
     "json-loader": "^0.5.7",
+    "mongodb": "^3.0.0-rc0",
     "mysql": "^2.15.0",
     "opn": "^5.1.0",
     "redis": "^2.8.0",
