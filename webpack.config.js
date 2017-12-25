@@ -69,7 +69,7 @@ if (process.env.NODE_ENV === 'production') {
     cp('-R', 'static', root)
     // console.log(assetsViewPath)
     cp('-R', 'view', root)
-    cp('-R', 'src/dao/config.json', root)
+    cp('-R', 'config.json', root)
     // '#source-map'
     module.exports.devtool = false
     module.exports.output = {

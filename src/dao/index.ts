@@ -6,9 +6,11 @@
 // let mysql = require('mysql');
 import mysql = require('mysql')
 import async = require('async');
-const databaseData = require('./config.json')
-
-// console.log(database)
+import fs = require('fs');
+// let databaseData = require('./config.json')
+let data = fs.readFileSync('./config.json')
+const databaseData = JSON.parse(data.toString())
+// console.log(databaseData)
 
 /**
  * @description 事务data参数格式体
@@ -26,6 +28,15 @@ export default class Dao {
 
     constructor() {
         // console.log('Dao对象初始化')
+        // fs.readFile('./config.json',  (err, data) => {
+        //     if (err) {
+        //         return console.error(err);
+        //     }
+        //     // console.log("异步读取: " + data.toString());
+        //     this.databaseData = JSON.parse(data.toString())
+        // });
+        // let data = fs.readFileSync('./config.json')
+        // this.databaseData = JSON.parse(data.toString())
         this.databaseData = databaseData
     }
 

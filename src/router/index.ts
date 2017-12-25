@@ -493,6 +493,14 @@ export default class Router {
             })
         })
 
+        // 获取管理员设置信息
+        this.app.post('/setting/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.setting.getData(request.body, response, next)
+            })
+        })
+
+
         // 获取管理员上次登录信息
         this.app.post('/limit/lastLoginTime', (request, response, next) => {
             checkToken(request, response, o => {
@@ -717,6 +725,7 @@ export default class Router {
 
         // 判断到底是登录蜂眼还是重定向到登录页
         this.app.post('/', (request, response, next) => {
+            // console.log('666')
             if (this.loginActive) {
                 this.loginActive = false
                 fs.readFile('view/index.html', function (err, data) {
