@@ -24,6 +24,7 @@ interface postData {
     login_name?:string
     ids?:string,
     type?:string | number
+    userIds?:string
 }
 
 

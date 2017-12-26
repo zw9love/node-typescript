@@ -7,7 +7,6 @@
 import mysql = require('mysql')
 import async = require('async');
 import fs = require('fs');
-// let databaseData = require('./config.json')
 let data = fs.readFileSync('./config.json')
 const databaseData = JSON.parse(data.toString())
 // console.log(databaseData)
@@ -27,16 +26,6 @@ export default class Dao {
     public commitActive: boolean = true
 
     constructor() {
-        // console.log('Dao对象初始化')
-        // fs.readFile('./config.json',  (err, data) => {
-        //     if (err) {
-        //         return console.error(err);
-        //     }
-        //     // console.log("异步读取: " + data.toString());
-        //     this.databaseData = JSON.parse(data.toString())
-        // });
-        // let data = fs.readFileSync('./config.json')
-        // this.databaseData = JSON.parse(data.toString())
         this.databaseData = databaseData
     }
 
@@ -52,7 +41,7 @@ export default class Dao {
 
         connection.connect();
 
-        connection.query(sql, dataArr, function (err, result) {
+        var query = connection.query(sql, dataArr, function (err, result) {
             if (err) {
                 console.log('[SELECT ERROR] - ', err.message);
                 if (errorFn) return errorFn()
@@ -61,7 +50,7 @@ export default class Dao {
             if (successFn) successFn(result)
 
         })
-
+        // console.log(query.sql)
         connection.end();
 
     }

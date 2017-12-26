@@ -19,6 +19,8 @@ import BeeneedleMac from '../web/BeeneedleMac'
 import BeeneedleComplete from '../web/BeeneedleComplete'
 import BeeeyeSafeLib from '../web/BeeeyeSafeLib'
 import BeeneedleGlobalAudit from '../web/BeeneedleGlobalAudit'
+import BeeeyeThreshold from '../web/BeeeyeThreshold'
+import BeeeyeAuditOut from '../web/BeeeyeAuditOut'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -48,6 +50,8 @@ export default class Router {
     public beeneedleComplete: BeeneedleComplete = new BeeneedleComplete()
     public beeeyeSafeLib: BeeeyeSafeLib = new BeeeyeSafeLib()
     public beeneedleGlobalAudit: BeeneedleGlobalAudit = new BeeneedleGlobalAudit()
+    public beeeyeThreshold: BeeeyeThreshold = new BeeeyeThreshold()
+    public beeeyeAuditOut: BeeeyeAuditOut = new BeeeyeAuditOut()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -490,6 +494,41 @@ export default class Router {
         this.app.post('/BeeneedleGlobalAudit/disableAll', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeneedleGlobalAudit.upDateDataBatch(request.body, response, next)
+            })
+        })
+
+        // 获取阈值配置数据
+        this.app.post('/hostTh/get/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeThreshold.getData(request.params.ids, response, next)
+            })
+        })
+
+        // 修改阈值配置数据
+        this.app.post('/hostTh/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeThreshold.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取数据导出数据
+        this.app.post('/audit/output/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeAuditOut.getData(request.body, response, next)
+            })
+        })
+
+        // 添加数据导出数据
+        this.app.post('/storagespace/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeAuditOut.addData(request.body, response, next)
+            })
+        })
+
+        // 删除数据导出数据
+        this.app.post('/storagespace/delete/:fileName', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeAuditOut.deleteDataById(request.params.fileName, response, next)
             })
         })
 

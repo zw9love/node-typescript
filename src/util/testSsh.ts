@@ -14,6 +14,16 @@ conn.on('ready', function () {
     // console.log('Client :: ready');
     console.log('进入了ready钩子函数')
 
+    // conn.exec(< string >command[, < object >options], < function >callback) 执行被检测端的命令行
+    conn.exec('touch 333.txt', function (err, stream) {
+        if (err) {
+            console.log('FIRST :: exec error: ' + err);
+            return conn.end();
+        }
+        console.log('没有错误')
+    });
+
+
     // 读取局域网系统文件
     // conn.sftp(function (err, sftp) {
     //     if (err) throw err;
@@ -23,38 +33,38 @@ conn.on('ready', function () {
     //     let end = new Date().getTime()
     //     console.log((end - start) + '毫秒')
     //     conn.end()
-        // 创建目录
-        // sftp.mkdir('/demo/files', err => {
-        //     if(err) console.log(err)
-        //     console.log('目录创建成功')
-        //     conn.end()
-        // })
+    // 创建目录
+    // sftp.mkdir('/demo/files', err => {
+    //     if(err) console.log(err)
+    //     console.log('目录创建成功')
+    //     conn.end()
+    // })
 
-        // 把本地文件写入局域网系统里面
-        // fs.readFile('C:/files/xmind-3.7.5.201709290120.exe', function (err, data) {
-        //     if (err) return console.error(err);
-        //     // console.log("异步读取文件数据: " + data.toString());
-        //     sftp.writeFile('/demo/xmind-3.7.5.201709290120.exe', data.toString(), function (err, data) {
-        //         if (err) return console.error(err);
-        //         console.log("数据写入成功！");
-        //         conn.end()
-        //     })
-        // });
+    // 把本地文件写入局域网系统里面
+    // fs.readFile('C:/files/xmind-3.7.5.201709290120.exe', function (err, data) {
+    //     if (err) return console.error(err);
+    //     // console.log("异步读取文件数据: " + data.toString());
+    //     sftp.writeFile('/demo/xmind-3.7.5.201709290120.exe', data.toString(), function (err, data) {
+    //         if (err) return console.error(err);
+    //         console.log("数据写入成功！");
+    //         conn.end()
+    //     })
+    // });
 
-        // sftp.readFile('/demo/1.txt', function (err, data) {
-        //     if (err) return console.error(err);
-        //     console.log("异步读取: " + data.toString());
-        //     conn.end();
-        // })
-        // sftp.stat('/demo/1.txt', (err, stats)=>{
-        //     console.log(stats.isFile());
-        //     conn.end();
-        // })
-        // sftp.readdir('/demo', function (err, list) {
-        //     if (err) throw err;
-        //     console.dir(list);
-        //     conn.end();
-        // })
+    // sftp.readFile('/demo/1.txt', function (err, data) {
+    //     if (err) return console.error(err);
+    //     console.log("异步读取: " + data.toString());
+    //     conn.end();
+    // })
+    // sftp.stat('/demo/1.txt', (err, stats)=>{
+    //     console.log(stats.isFile());
+    //     conn.end();
+    // })
+    // sftp.readdir('/demo', function (err, list) {
+    //     if (err) throw err;
+    //     console.dir(list);
+    //     conn.end();
+    // })
     // });
 
     // 进入正常执行
@@ -73,7 +83,10 @@ conn.on('ready', function () {
         });
     });
 }).on('error', function (err) {
-    console.log('连接失败')
+    console.log('有错误，连接失败。')
+})
+.on('end', function () {
+    console.log('正常的失去连接。');
 }).connect({
     host: '192.168.0.140',
     port: '22',
