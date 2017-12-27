@@ -155,7 +155,7 @@ function beginTransaction({ self, postData, where, dataArr, successFn, errorFn }
     // page分页存在
     if (page) {
         pageSize = ~~page.pageSize
-        pageStart = (~~page.pageNumber - 1) * pageSize
+        if (page.pageNumber !== undefined) pageStart = (~~page.pageNumber - 1) * pageSize
         limit = ` limit ${pageStart}, ${pageSize}`
     }
     // size存在（排序查找功能）
@@ -172,6 +172,8 @@ function beginTransaction({ self, postData, where, dataArr, successFn, errorFn }
         { sql: count + where, dataArr: dataArr },
         { sql: select + where + search + sortSql + limit, dataArr: dataArr },
     ]
+
+    // console.log(select + where + search + sortSql + limit)
 
     // 开始事务（事务是必须走的，因为查询记录总数和拿到数据是两条sql语句才能解决）
     self.dao.connectTransaction(tsData, (connection, res) => {

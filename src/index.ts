@@ -51,4 +51,4 @@ new NodeServer()
 //     // str = md5.digest('hex');
 //     // return str;
 // }
-// console.log(aesEncrypt('admin123.com'))
+// console.log(aesEncrypt('admin123.com'))  // 34bb6a6094abcdff4bf6c6ef88db2cee

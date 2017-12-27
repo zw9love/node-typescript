@@ -35,6 +35,7 @@ interface response {
     send: Function
     header: Function
     json: Function
+    download: Function
 }
 
 

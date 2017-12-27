@@ -12,7 +12,7 @@ export default class BeeneedleSoftware {
     private tableName: string = 'common_software_group'
     constructor() { }
     /**
-     * @description 操作dao对象拿到setting数据
+     * @description 操作dao对象拿到数据
      * @param data web层传递参数
      * @param successFn 成功执行回调函数
      * @param errorFn 失败执行回调函数
@@ -21,6 +21,7 @@ export default class BeeneedleSoftware {
         let { row, size, page, query, sort } = postData
         let platformIds = row.platformIds
         let where = ` where platform_ids = ? `
+        console.log(postData)
         beginTransaction({ self: this, successFn, errorFn, postData, dataArr: platformIds, where})
         // let { row, size, page, query, sort } = postData
         // let platformIds = row.platformIds

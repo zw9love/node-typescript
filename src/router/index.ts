@@ -532,13 +532,26 @@ export default class Router {
             })
         })
 
+        // 下载数据导出数据
+        this.app.get('/storagespace/download/:fileName', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeAuditOut.downFile(request.params.fileName, response, next)
+            })
+        })
+
+        // 上传数据导出数据
+        this.app.post('/storagespace/upload/', multipartMiddleware, (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeAuditOut.uploadFile(request, response, next)
+            })
+        })
+
         // 获取管理员设置信息
         this.app.post('/setting/get', (request, response, next) => {
             checkToken(request, response, o => {
                 this.setting.getData(request.body, response, next)
             })
         })
-
 
         // 获取管理员上次登录信息
         this.app.post('/limit/lastLoginTime', (request, response, next) => {
