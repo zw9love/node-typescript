@@ -6,3 +6,4 @@ webapp
 build
 out.log
 err.log
+*.sql

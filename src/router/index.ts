@@ -816,6 +816,13 @@ export default class Router {
             })
         })
 
+        // 测试下载链接
+        this.app.get('/testdownload', (request, response, next) => {
+            console.log('进来了')
+            let path = 'e:/photo/h19.jpg'
+            response.download(path)
+        })
+
         // 重定向到/login
         this.app.get('*', (request, response, next) => {
             // console.log(request.url)
@@ -828,5 +835,6 @@ export default class Router {
             console.log('post请求：' + request.url)
             next()
         })
+
     }
 }

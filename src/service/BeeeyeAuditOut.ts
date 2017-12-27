@@ -184,6 +184,7 @@ export default class BeeeyeAuditOut {
     downFile(fileName: string, successFn?: Function, errorFn?: Function): void {
         let auditPath = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/audit/' : 'c:/audit/'
         let path = auditPath + fileName + '.csv'
+        // let path = 'e:/photo/h19.jpg'
         if (successFn) successFn(path)
     }
 
