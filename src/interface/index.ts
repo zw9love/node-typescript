@@ -62,7 +62,8 @@ interface request {
     params: {
         type?: string | number
     }
-    files: any
+    files?: any
+    file?: any
     store?:any
 }
 

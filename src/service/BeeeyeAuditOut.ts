@@ -9,10 +9,12 @@ import { postData, moduleObj } from '../interface/index'
 import os = require('os')
 import fs = require('fs')
 let child_process = require('child_process')
-
+var path = require('path')
 export default class BeeeyeAuditOut {
     public dao = new Dao()
     private tableName: string = 'fileinput_detail'
+    // private path: string = path.join(process.cwd(),'./output/')
+    private path: string = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/audit/' : 'c:/audit/'
     constructor() { }
     /**
      * @description 操作dao对象拿到数据
@@ -41,7 +43,10 @@ export default class BeeeyeAuditOut {
      */
     addData(data: any, successFn?: Function, errorFn?: Function): void {
         // sql语句导出sql文件
-        let path = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/audit/' : 'c:/audit/'
+        let path = this.path
+        // console.log(path)
+        // console.log(process.cwd())
+        // return
         if (!fs.existsSync(path)) fs.mkdirSync(path)
         let sql = `INSERT INTO ${this.tableName} (user_ids, default_path, filename, create_time, type) VALUES `
         let userIds = data.userIds
@@ -166,7 +171,7 @@ export default class BeeeyeAuditOut {
         let sql = `DELETE FROM ${this.tableName} where filename = ?`;
         // 开启事务方法
         this.dao.connectDatabase(sql, ids + '.csv', res => {
-            let auditPath = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/audit/' : 'c:/audit/'
+            let auditPath = this.path
             fs.unlink(auditPath + ids + '.csv', data => {
                 let affectedRows = res.affectedRows
                 let json = affectedRows > 0 ? getJson('删除成功', 200) : getJson('删除失败', 606)
@@ -182,7 +187,7 @@ export default class BeeeyeAuditOut {
      * @param errorFn 失败执行的回调函数
      */
     downFile(fileName: string, successFn?: Function, errorFn?: Function): void {
-        let auditPath = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/audit/' : 'c:/audit/'
+        let auditPath = this.path
         let path = auditPath + fileName + '.csv'
         // let path = 'e:/photo/h19.jpg'
         if (successFn) successFn(path)
@@ -198,11 +203,12 @@ export default class BeeeyeAuditOut {
         // console.log(json)
         let path = json.path.replace(/\\/g, "/")
         let tableName = ''
-        // console.log(path)
 
         // 表名和文件不一致的时候
-        if (json.name.indexOf(json.ids) === -1) {
-            if (successFn) successFn(false)
+        if (json.originalname.indexOf(json.ids) === -1) {
+            fs.unlink(path, data => {
+                if (successFn) successFn(false)
+            })
             return
         }
 

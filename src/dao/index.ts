@@ -89,6 +89,9 @@ export default class Dao {
                         // console.log(query.sql)
                         // console.log(result)
                     })
+                    // console.log('---------------------')
+                    // console.log(query.sql)
+                    // console.log('---------------------')
                 }
                 taskData.push(task)
             })

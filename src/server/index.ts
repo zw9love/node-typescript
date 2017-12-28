@@ -31,9 +31,8 @@ let RedisStore = require('connect-redis')(session);
 import Router from '../router/index'
 import { getRandomString } from '../util/index'
 import Redis from '../util/Redis'
-let app = express();
+let app = express()
 
-// let router = new Router()
 export default class NodeServer {
     public app = app
     public router = new Router(this.app)

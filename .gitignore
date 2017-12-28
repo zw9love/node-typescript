@@ -7,3 +7,5 @@ build
 out.log
 err.log
 *.sql
+upload
+output

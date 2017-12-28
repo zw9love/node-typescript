@@ -29,8 +29,8 @@ import Redis from '../util/Redis'
 const { check, validationResult } = require('express-validator/check')
 const { matchedData, sanitize } = require('express-validator/filter')
 import fs = require("fs")
-// var multer = require(‘multer’);
-// app.use(multer({dest: "./public/images"}))
+import multer = require('multer')
+let uploadPath = multer({ dest: "./upload/" })
 
 var multipartMiddleware = multipart()
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) // 如果前台传递的类型是Form Data类型的数据
@@ -541,7 +541,7 @@ export default class Router {
         })
 
         // 上传数据导出数据
-        this.app.post('/storagespace/upload/', multipartMiddleware, (request, response, next) => {
+        this.app.post('/storagespace/upload/', uploadPath.single('file'), (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeeyeAuditOut.uploadFile(request, response, next)
             })

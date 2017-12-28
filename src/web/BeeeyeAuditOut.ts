@@ -64,7 +64,9 @@ export default class BeeeyeAuditOut {
      * @param next 向下执行方法
      */
     uploadFile(request: request, response: response, next: Function): void {
-        let file = request.files.file
+        // console.log(request.file)
+        // let file = request.files.file
+        let file = request.file
         file.ids = request.body.ids
         // console.log(file)
         this.service.uploadFile(file, flag => {
