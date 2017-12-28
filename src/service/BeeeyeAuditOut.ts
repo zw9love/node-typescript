@@ -238,10 +238,11 @@ export default class BeeeyeAuditOut {
 
         this.dao.connectTransaction(taskArr, res => {
             // console.log('成功向mysql导入了文件。')
-            fs.unlink(path, data => {
-                // console.log('成功删除了导入的文件。')
-                if (successFn) successFn(true)
-            })
+            // fs.unlink(path, data => {
+            //     // console.log('成功删除了导入的文件。')
+            //     if (successFn) successFn(true)
+            // })
+            if (successFn) successFn(true)
         }, errorFn)
     }
 }

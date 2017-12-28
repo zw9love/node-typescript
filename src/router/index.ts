@@ -30,7 +30,20 @@ const { check, validationResult } = require('express-validator/check')
 const { matchedData, sanitize } = require('express-validator/filter')
 import fs = require("fs")
 import multer = require('multer')
-let uploadPath = multer({ dest: "./upload/" })
+var storage = multer.diskStorage({
+    // //设置上传后文件路径，uploads文件夹会自动创建。
+    destination: function (req, file, cb) {
+        cb(null, './upload')
+    },
+    //给上传文件重命名，获取添加后缀名
+    filename: function (req, file, cb) {
+        var fileFormat = (file.originalname).split(".");
+        // console.log(file)
+        // cb(null, file.fieldname + '-' + Date.now() + "." + fileFormat[fileFormat.length - 1]);
+        cb(null, file.originalname)
+    }
+});  
+let uploadInfo = multer({storage})
 
 var multipartMiddleware = multipart()
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) // 如果前台传递的类型是Form Data类型的数据
@@ -541,7 +554,7 @@ export default class Router {
         })
 
         // 上传数据导出数据
-        this.app.post('/storagespace/upload/', uploadPath.single('file'), (request, response, next) => {
+        this.app.post('/storagespace/upload/', uploadInfo.single('file'), (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeeyeAuditOut.uploadFile(request, response, next)
             })
