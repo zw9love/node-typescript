@@ -14,7 +14,7 @@ export default class BeeeyeAuditOut {
     public dao = new Dao()
     private tableName: string = 'fileinput_detail'
     // private path: string = path.join(process.cwd(),'./output/')
-    private path: string = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/audit/' : 'c:/audit/'
+    private path: string = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/output/' : 'c:/output/'
     constructor() { }
     /**
      * @description 操作dao对象拿到数据
@@ -56,7 +56,7 @@ export default class BeeeyeAuditOut {
         let defaultPath = '/usr/local/share/lpdata/import'
         let outputSql = ``
         let taskArr = []
-        // let outputSql = `select * from beeeye_host into outfile 'c:/audit/beeeye_host.csv' fields terminated by ','optionally enclosed by ''lines terminated by '\\r\\n';`
+        // let outputSql = `select * from beeeye_host into outfile 'c:/output/beeeye_host.csv' fields terminated by ','optionally enclosed by ''lines terminated by '\\r\\n';`
         typeArr.forEach((o, i) => {
             let str = i === typeArr.length - 1 ? ' (?,?,?,?,?) ' : ' (?,?,?,?,?), '
             let tempIds = getRandomString() + '.csv'
@@ -110,7 +110,7 @@ export default class BeeeyeAuditOut {
         // 命令行导出sql文件
         // let windowsCommand = 'c:/xampp/mysql/bin/mysqldump -uroot -p159357 beeeyehced'
         // let linuxCommand = 'mysqldump -uroot -proot beeeyehced'
-        // let path = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/audit/' : 'c:/audit/'
+        // let path = os.platform().toLowerCase().search('win') === -1 ? '/home/zengwei/output/' : 'c:/output/'
         // let command = os.platform().toLowerCase().search('win') === -1 ? linuxCommand : windowsCommand
         // let sql = `INSERT INTO ${this.tableName} (user_ids, default_path, filename, create_time, type) VALUES `
         // let userIds = data.userIds
