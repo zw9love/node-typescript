@@ -832,8 +832,8 @@ export default class Router {
 
         // 测试下载链接
         this.app.get('/testdownload', (request, response, next) => {
-            console.log('进来了')
-            let path = 'e:/photo/h19.jpg'
+            console.log('下载美女来了')
+            let path = 'c:/mv.jpg'
             response.download(path)
         })
 
