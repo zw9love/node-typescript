@@ -7,6 +7,9 @@
 import NodeServer from './server/index'
 new NodeServer()
 
+// excel文件测试
+// require('./util/testXlsx')
+
 // 命令行测试
 // require('./util/testChildProcess')
 
