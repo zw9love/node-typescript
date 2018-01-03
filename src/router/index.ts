@@ -17,6 +17,8 @@ import BeeneedleObjectHost from '../web/BeeneedleObjectHost'
 import BeeneedleSoftware from '../web/BeeneedleSoftware'
 import BeeneedleMac from '../web/BeeneedleMac'
 import BeeneedleComplete from '../web/BeeneedleComplete'
+import BeeneedleProtect from '../web/BeeneedleProtect'
+import BeeneedleProtectFileProp from '../web/BeeneedleProtectFileProp'
 import BeeeyeSafeLib from '../web/BeeeyeSafeLib'
 import BeeneedleGlobalAudit from '../web/BeeneedleGlobalAudit'
 import BeeeyeThreshold from '../web/BeeeyeThreshold'
@@ -62,6 +64,8 @@ export default class Router {
     public beeneedleSoftware: BeeneedleSoftware = new BeeneedleSoftware()
     public beeneedleMac: BeeneedleMac = new BeeneedleMac()
     public beeneedleComplete: BeeneedleComplete = new BeeneedleComplete()
+    public beeneedleProtect: BeeneedleProtect = new BeeneedleProtect()
+    public beeneedleProtectFileProp: BeeneedleProtectFileProp = new BeeneedleProtectFileProp()
     public beeeyeSafeLib: BeeeyeSafeLib = new BeeeyeSafeLib()
     public beeneedleGlobalAudit: BeeneedleGlobalAudit = new BeeneedleGlobalAudit()
     public beeeyeThreshold: BeeeyeThreshold = new BeeeyeThreshold()
@@ -121,6 +125,80 @@ export default class Router {
         this.app.post('/BeeneedlePelf/put', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeneedlePelf.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取进程保护列表
+        this.app.post('/BeeneedleProtected/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtect.getData(request.body, response, next)
+            })
+        })
+
+
+        //  添加进程保护
+        this.app.post('/BeeneedleProtected/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtect.addData(request.body, response, next)
+            })
+        })
+
+
+        //  获取单个进程保护
+        this.app.post('/BeeneedleProtected/get/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtect.getDataById(request.params.ids, response, next)
+            })
+        })
+
+        //  修改进程保护
+        this.app.post('/BeeneedleProtected/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtect.upDateData(request.body, response, next)
+            })
+        })
+
+        //  删除单个进程保护
+        this.app.post('/BeeneedleProtected/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtect.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 获取文件属性保护列表
+        this.app.post('/FileAttribute/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtectFileProp.getData(request.body, response, next)
+            })
+        })
+
+
+        //  添加文件属性保护
+        this.app.post('/FileAttribute/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtectFileProp.addData(request.body, response, next)
+            })
+        })
+
+
+        //  获取单个文件属性保护
+        this.app.post('/FileAttribute/get/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtectFileProp.getDataById(request.params.ids, response, next)
+            })
+        })
+
+        //  修改文件属性保护
+        this.app.post('/FileAttribute/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtectFileProp.upDateData(request.body, response, next)
+            })
+        })
+
+        //  删除单个文件属性保护
+        this.app.post('/FileAttribute/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtectFileProp.deleteDataById(request.params.ids, response, next)
             })
         })
 

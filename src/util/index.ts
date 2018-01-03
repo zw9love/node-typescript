@@ -89,6 +89,7 @@ function getRandomString(): string {
  */
 function checkToken(request: request, response: response, successFn: Function): void {
     if (successFn) successFn()
+
     // let headerToken = request.headers.token
     // if (headerToken === 'debug') {
     //     if (successFn) successFn()
@@ -103,6 +104,8 @@ function checkToken(request: request, response: response, successFn: Function): 
     //     client.set(headerToken, login_name, 'EX', expired) // 过期时间单位是秒
     //     if (successFn) successFn()
     // });
+
+    // session有毛病
     // let sessionToken = request.session.token
     // // console.log(request.session.store)
     // // console.log('sessionid：' + request.session.id)
@@ -116,7 +119,7 @@ function checkToken(request: request, response: response, successFn: Function): 
     // }else{
     //     response.json(getJson('用户登录失效', 611, null))
     // }
-    // // return flag
+    // return flag
 }
 
 /**
