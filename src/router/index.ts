@@ -19,6 +19,14 @@ import BeeneedleMac from '../web/BeeneedleMac'
 import BeeneedleComplete from '../web/BeeneedleComplete'
 import BeeneedleProtect from '../web/BeeneedleProtect'
 import BeeneedleProtectFileProp from '../web/BeeneedleProtectFileProp'
+import BeeneedleProcessAccessAudit from '../web/BeeneedleProcessAccessAudit'
+import BeeneedleSensesAccessAudit from '../web/BeeneedleSensesAccessAudit'
+import BeeneedleProtectFilePropAudit from '../web/BeeneedleProtectFilePropAudit'
+import BeeneedleApplicationAudit from '../web/BeeneedleApplicationAudit'
+import BeeneedlePolicyLoadAudit from '../web/BeeneedlePolicyLoadAudit'
+import BeeneedleSafeConfigAudit from '../web/BeeneedleSafeConfigAudit'
+import BeeeyeUserLoginAudit from '../web/BeeeyeUserLoginAudit'
+import BeeeyeUserConfigAudit from '../web/BeeeyeUserConfigAudit'
 import BeeeyeSafeLib from '../web/BeeeyeSafeLib'
 import BeeneedleGlobalAudit from '../web/BeeneedleGlobalAudit'
 import BeeeyeThreshold from '../web/BeeeyeThreshold'
@@ -66,6 +74,14 @@ export default class Router {
     public beeneedleComplete: BeeneedleComplete = new BeeneedleComplete()
     public beeneedleProtect: BeeneedleProtect = new BeeneedleProtect()
     public beeneedleProtectFileProp: BeeneedleProtectFileProp = new BeeneedleProtectFileProp()
+    public beeneedleProcessAccessAudit: BeeneedleProcessAccessAudit = new BeeneedleProcessAccessAudit()
+    public beeneedleSensesAccessAudit: BeeneedleSensesAccessAudit = new BeeneedleSensesAccessAudit()
+    public beeneedleProtectFilePropAudit: BeeneedleProtectFilePropAudit = new BeeneedleProtectFilePropAudit()
+    public beeneedleApplicationAudit: BeeneedleApplicationAudit = new BeeneedleApplicationAudit()
+    public beeneedlePolicyLoadAudit: BeeneedlePolicyLoadAudit = new BeeneedlePolicyLoadAudit()
+    public beeneedleSafeConfigAudit: BeeneedleSafeConfigAudit = new BeeneedleSafeConfigAudit()
+    public beeeyeUserLoginAudit: BeeeyeUserLoginAudit = new BeeeyeUserLoginAudit()
+    public beeeyeUserConfigAudit: BeeeyeUserConfigAudit = new BeeeyeUserConfigAudit()
     public beeeyeSafeLib: BeeeyeSafeLib = new BeeeyeSafeLib()
     public beeneedleGlobalAudit: BeeneedleGlobalAudit = new BeeneedleGlobalAudit()
     public beeeyeThreshold: BeeeyeThreshold = new BeeeyeThreshold()
@@ -125,6 +141,174 @@ export default class Router {
         this.app.post('/BeeneedlePelf/put', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeneedlePelf.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取进程访控审计
+        this.app.post('/BeeneedleProcessAccessAudit/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProcessAccessAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 单个删除进程访控审计
+        this.app.post('/BeeneedleProcessAccessAudit/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProcessAccessAudit.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 批量删除进程访控审计
+        this.app.post('/BeeneedleProcessAccessAudit/delete', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProcessAccessAudit.deleteDataBatch(request.body, response, next)
+            })
+        })
+
+        // 获取敏感资源访控审计
+        this.app.post('/BeeneedleSensesAccessAudit/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleSensesAccessAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 单个删除敏感资源访控审计
+        this.app.post('/BeeneedleSensesAccessAudit/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleSensesAccessAudit.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 批量删除敏感资源访控审计
+        this.app.post('/BeeneedleSensesAccessAudit/delete', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleSensesAccessAudit.deleteDataBatch(request.body, response, next)
+            })
+        })
+
+        // 获取文件属性保护审计
+        this.app.post('/BeeneedleFileProtectAudit/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtectFilePropAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 单个删除文件属性保护审计
+        this.app.post('/BeeneedleFileProtectAudit/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtectFilePropAudit.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 批量删除文件属性保护审计
+        this.app.post('/BeeneedleFileProtectAudit/delete', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleProtectFilePropAudit.deleteDataBatch(request.body, response, next)
+            })
+        })
+
+        // 获取应用程序审计
+        this.app.post('/BeeneedleGrayFileAudit/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleApplicationAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 单个删除应用程序审计
+        this.app.post('/BeeneedleGrayFileAudit/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleApplicationAudit.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 批量删除应用程序审计
+        this.app.post('/BeeneedleGrayFileAudit/delete', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleApplicationAudit.deleteDataBatch(request.body, response, next)
+            })
+        })
+
+        // 获取策略加载审计
+        this.app.post('/BeeneedlePolicyLoadAudit/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedlePolicyLoadAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 删除单个策略加载审计
+        this.app.post('/BeeneedlePolicyLoadAudit/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedlePolicyLoadAudit.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 批量删除策略加载审计
+        this.app.post('/BeeneedlePolicyLoadAudit/delete', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedlePolicyLoadAudit.deleteDataBatch(request.body, response, next)
+            })
+        })
+
+        // 获取安全配置审计
+        this.app.post('/BeeneedleConfigAudit/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleSafeConfigAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 删除单个安全配置审计
+        this.app.post('/BeeneedleConfigAudit/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleSafeConfigAudit.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 批量删除安全配置审计
+        this.app.post('/BeeneedleConfigAudit/delete', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleSafeConfigAudit.deleteDataBatch(request.body, response, next)
+            })
+        })
+
+        // 清空安全配置审计
+        this.app.post('/BeeneedleConfigAudit/clearAll', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleSafeConfigAudit.clearAll(response, next)
+            })
+        })
+
+        // 获取用户登录审计
+        this.app.post('/audit/login/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeUserLoginAudit.getData(request.body, response, next)
+            })
+        })
+
+        // 删除单个用户登录审计
+        this.app.post('/audit/login/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeUserLoginAudit.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 批量删除用户登录审计
+        this.app.post('/audit/login/delete', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeUserLoginAudit.deleteDataBatch(request.body, response, next)
+            })
+        })
+
+        // 清空用户登录审计
+        this.app.post('/audit/login/clearAll', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeUserLoginAudit.clearAll(response, next)
+            })
+        })
+
+        // 获取用户配置审计
+        this.app.post('/user/getAudit', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeUserConfigAudit.getData(request.body, response, next)
             })
         })
 
