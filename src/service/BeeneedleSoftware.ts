@@ -20,6 +20,7 @@ export default class BeeneedleSoftware {
     getData(postData: postData, successFn?: Function, errorFn?: Function): void {
         let { row, size, page, query, sort } = postData
         let platformIds = row.platformIds
+        let select = `SELECT * FROM ${this.tableName} `
         let where = ` where platform_ids = ? `
         console.log(postData)
         beginTransaction({ self: this, successFn, errorFn, postData, dataArr: platformIds, where})

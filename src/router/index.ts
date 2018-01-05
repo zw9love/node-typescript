@@ -31,6 +31,9 @@ import BeeeyeSafeLib from '../web/BeeeyeSafeLib'
 import BeeneedleGlobalAudit from '../web/BeeneedleGlobalAudit'
 import BeeeyeThreshold from '../web/BeeeyeThreshold'
 import BeeeyeAuditOut from '../web/BeeeyeAuditOut'
+import BeeneedleStoragespace from '../web/BeeneedleStoragespace'
+import BeeeyeReport from '../web/BeeeyeReport'
+import BeeeyeReportTemplate from '../web/BeeeyeReportTemplate'
 import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
@@ -86,6 +89,9 @@ export default class Router {
     public beeneedleGlobalAudit: BeeneedleGlobalAudit = new BeeneedleGlobalAudit()
     public beeeyeThreshold: BeeeyeThreshold = new BeeeyeThreshold()
     public beeeyeAuditOut: BeeeyeAuditOut = new BeeeyeAuditOut()
+    public beeneedleStoragespace: BeeneedleStoragespace = new BeeneedleStoragespace()
+    public beeeyeReport: BeeeyeReport = new BeeeyeReport()
+    public beeeyeReportTemplate: BeeeyeReportTemplate = new BeeeyeReportTemplate()
     public app: any
     public client: any = Redis.client
     private loginActive: boolean = false
@@ -141,6 +147,62 @@ export default class Router {
         this.app.post('/BeeneedlePelf/put', (request, response, next) => {
             checkToken(request, response, o => {
                 this.beeneedlePelf.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取报告列表
+        this.app.post('/report/report/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeReport.getData(request.body, response, next)
+            })
+        })
+
+        // 生成报告
+        this.app.post('/report/report/post', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeReport.addData(request.body, response, next)
+            })
+        })
+
+        // 删除报告
+        this.app.post('/report/report/delete/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeReport.deleteDataById(request.params.ids, response, next)
+            })
+        })
+
+        // 获取报告模板
+        this.app.post('/report/template/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeReportTemplate.getData(request.body, response, next)
+            })
+        })
+
+        // 修改报告模板
+        this.app.post('/report/template/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeeyeReportTemplate.upDateData(request.body, response, next)
+            })
+        })
+
+        // 获取存储空间数据
+        this.app.post('/storagespace/get', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleStoragespace.getData(request.body, response, next)
+            })
+        })
+
+        // 修改存储空间数据
+        this.app.post('/storagespace/put', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleStoragespace.upDateData(request.body, response, next)
+            })
+        })
+
+        // 手动检测存储空间
+        this.app.post('/storagespace/manualCheckSpace', (request, response, next) => {
+            checkToken(request, response, o => {
+                this.beeneedleStoragespace.manualCheckSpace(response, next)
             })
         })
 
