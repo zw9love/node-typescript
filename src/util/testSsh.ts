@@ -98,6 +98,6 @@ conn.on('ready', function () {
 
 // let start = new Date().getTime()
 // // fs.writeFileSync('C:/files/web-learn2.txt', fs.readFileSync('C:/files/web-learn.txt'));
-// fs.createReadStream('C:/files/xmind-3.7.5.201709290120.exe').pipe(fs.createWriteStream('C:/files/xmind-3.7.5.hehe.exe'))
+// fs.createReadStream('C:/files/xmind-3.7.5.201709290120.exe').pipe(fs.createWriteStream('C:/files/xmind-3.7.5.hehe.exe')) // 文件复制
 // let end = new Date().getTime()
 // console.log((end - start) / 1000 + '秒')

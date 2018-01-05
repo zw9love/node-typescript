@@ -164,6 +164,14 @@ export default class Router {
             })
         })
 
+        // 下载报告
+        this.app.get('/report/report/get/:ids', (request, response, next) => {
+            checkToken(request, response, o => {
+                // console.log(request.query)
+                this.beeeyeReport.downFile(request.params.ids, response, next)
+            })
+        })
+
         // 删除报告
         this.app.post('/report/report/delete/:ids', (request, response, next) => {
             checkToken(request, response, o => {

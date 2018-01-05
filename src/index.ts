@@ -7,6 +7,10 @@
 import NodeServer from './server/index'
 new NodeServer()
 
+// uuid测试
+// import uuidv1 = require('uuid/v1');  //生成随机字符串
+// console.log(uuidv1())
+// console.log(uuidv1(null, [], 0))
 // excel文件测试
 // require('./util/testXlsx')
 

@@ -43,6 +43,7 @@ export default class BeeeyeReport {
         let time = new Date().getTime() / 1000
         let arr = [ids, title, '', time, '']
         this.dao.connectDatabase(sql, arr, res => {
+            fs.createReadStream('C:/report/REPORT-TEMPLATE.docx').pipe(fs.createWriteStream(`${path + 'REPORT-' + ids.slice(0,24)}.docx`))
             if (successFn) successFn(res)
         })
     }
@@ -58,15 +59,16 @@ export default class BeeeyeReport {
         let sql = `DELETE FROM ${this.tableName} where ids = ?`;
         // 开启事务方法
         this.dao.connectDatabase(sql, ids, res => {
-            let affectedRows = res.affectedRows
-            let json = affectedRows > 0 ? getJson('删除成功', 200) : getJson('删除失败', 606)
-            if (successFn) successFn(json)
-            // let auditPath = this.path
-            // fs.unlink(auditPath + ids + '.csv', data => {
-            //     let affectedRows = res.affectedRows
-            //     let json = affectedRows > 0 ? getJson('删除成功', 200) : getJson('删除失败', 606)
-            //     if (successFn) successFn(json)
-            // })
+            // let affectedRows = res.affectedRows
+            // let json = affectedRows > 0 ? getJson('删除成功', 200) : getJson('删除失败', 606)
+            // if (successFn) successFn(json)
+            let name = this.path + 'REPORT-' + ids + '.docx'
+            // console.log(path + 'REPORT-' + ids)
+            fs.unlink(name, data => {
+                let affectedRows = res.affectedRows
+                let json = affectedRows > 0 ? getJson('删除成功', 200) : getJson('删除失败', 606)
+                if (successFn) successFn(json)
+            })
         }, errorFn)
     }
 
@@ -77,7 +79,10 @@ export default class BeeeyeReport {
      * @param errorFn 失败执行的回调函数
      */
     downFile(fileName: string, successFn?: Function, errorFn?: Function): void {
-
+        let path = this.path + 'REPORT-' + fileName + '.docx'
+        // console.log(path)
+        // let path = 'e:/photo/h19.jpg'
+        if (successFn) successFn(path)
     }
 
 }
