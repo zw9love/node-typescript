@@ -1,3 +1,5 @@
+import { throws } from "assert";
+
 /**
  * @author zengwei
  * @since 2017/11/15
@@ -6,6 +8,37 @@
 // 启动node服务器
 import NodeServer from './server/index'
 new NodeServer()
+
+// 异常测试
+// let a = {}
+
+// 1、异常catch
+// try {
+//     console.log(a['val']['val']) //触发异常
+//     console.log('正常执行') //出现异常，这里就不执行了
+// } catch (error) {
+//     console.log('出现异常了')
+//     console.log(error.message)
+// } finally{
+//     console.log('怎么都会进来')
+// } 
+
+// 2、异常throw
+// class Test {
+//     public mySum(x, y): number{
+//         x=Number(x);
+//         y=Number(y);
+//         if(isNaN(x)||isNaN(y))
+//         {
+//             throw new Error("两个数相加前提两个数必须都是数字").message; // 抛出异常
+//         }
+//         else
+//         {
+//             return x+y;
+//         }
+//     }
+// }
+// new Test().mySum(1,'a1')
 
 // uuid测试
 // import uuidv1 = require('uuid/v1');  //生成随机字符串
