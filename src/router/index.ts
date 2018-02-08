@@ -55,8 +55,8 @@ var storage = multer.diskStorage({
         // cb(null, file.fieldname + '-' + Date.now() + "." + fileFormat[fileFormat.length - 1]);
         cb(null, file.originalname)
     }
-});  
-let uploadInfo = multer({storage})
+});
+let uploadInfo = multer({ storage })
 
 var multipartMiddleware = multipart()
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) // 如果前台传递的类型是Form Data类型的数据
@@ -109,6 +109,18 @@ export default class Router {
             next();
         })
 
+        this.app.get('/regedit', (request, response, next) => {
+            fs.readFile('view/regedit.html', function (err, data) {
+                response.writeHead(200, { 'Content-Type': 'text/html' });
+                response.end(data.toString())
+            })
+        })
+
+        // regedit/getFileList
+        this.app.post('/regedit/getFileList/', (request, response, next) => {
+            response.json(["windows_2012_x64", "windows_2008_x86", "windows_2003_x86", "windows_2008_x64"])
+        })
+
         // 获取黑白灰名单列表
         this.app.post('/BeeneedlePelf/get', (request, response, next) => {
             checkToken(request, response, o => {
@@ -117,7 +129,7 @@ export default class Router {
                         notEmpty: true,
                         errorMessage: '参数row不能为空'
                     },
-                    'row.host_ids':{
+                    'row.host_ids': {
                         notEmpty: true,
                         errorMessage: '参数row的字段host_ids不能为空',
                     },

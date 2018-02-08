@@ -1,0 +1,148 @@
+html,
+body {
+  background-color: #373737;
+  overflow-x: hidden;
+}
+* {
+  color: #c6c6c6;
+}
+.container {
+  margin: 20px;
+}
+.container .header {
+  text-align: center;
+  margin: 30px 0;
+}
+.container .header p {
+  font-size: 15px;
+  color: #c6c6c6;
+  font-weight: 600;
+}
+.container .main {
+  display: none;
+}
+.container .main .main-table {
+  width: 100%;
+  font-size: 15px;
+  border-collapse: collapse;
+}
+.container .main .main-table thead tr {
+  border-bottom: 1px solid #fff;
+}
+.container .main .main-table thead tr th {
+  padding: 15px 0;
+}
+.container .main .main-table tbody tr.odd {
+  background: #3c3c3c;
+}
+.container .main .main-table tbody tr {
+  text-align: center;
+  border-bottom: 1px solid #fff;
+}
+.container .main .main-table tbody tr td {
+  width: 50%;
+  padding: 20px 0;
+}
+.container .main .main-table tbody tr td a.btn {
+  border: 1px solid #fff;
+  background-color: transparent;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+}
+.container .main-placeholder {
+  display: block;
+}
+.container .main-placeholder p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #c6c6c6;
+}
+.container .shadow {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: #000;
+  left: 0;
+  top: 0;
+  _position: absolute;
+  display: none;
+  z-index: 99;
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+}
+.container .modal {
+  display: none;
+  opacity: 0;
+  width: 600px;
+  background-color: #373737;
+  position: fixed;
+  left: 0;
+  top: 0;
+  _position: absolute;
+  border-radius: 10px;
+  border: 1px solid #c6c6c6;
+  z-index: 100;
+}
+.container .modal .modal-header {
+  padding: 15px 15px;
+  border-bottom: 1px solid #c6c6c6;
+}
+.container .modal .modal-header p {
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+}
+.container .modal .modal-footer {
+  padding: 15px 15px;
+  border-top: 1px solid #c6c6c6;
+  text-align: right;
+}
+.container .modal .modal-footer .modal-button {
+  outline: none;
+  cursor: pointer;
+  padding: 0 15px;
+  line-height: 33px;
+  color: #eee;
+  border: 1px solid #fff;
+  background-color: #333;
+  font-size: 14px;
+  border-radius: 3px;
+}
+.container .modal .modal-footer .sure {
+  margin-right: 10px;
+}
+.container .modal .modal-main {
+  padding: 0 15px;
+}
+.container .modal .modal-main .main-cell {
+  margin: 20px 0;
+  position: relative;
+  font-size: 14px;
+}
+.container .modal .modal-main .main-cell .main-cell-left {
+  position: absolute;
+  width: 80px;
+  top: 14px;
+}
+.container .modal .modal-main .main-cell .main-cell-right {
+  padding-left: 80px;
+  padding-top: 3px;
+}
+.container .modal .modal-main .main-cell .main-cell-right input {
+  width: 492px;
+  background-color: #373737;
+  border: 1px solid #fff;
+  border-radius: 3px;
+  height: 36px;
+  line-height: 36px;
+  text-indent: 20px;
+  overflow: hidden;
+}
+.container .modal .modal-main .main-cell .main-cell-right input.cell-name {
+  text-align: left;
+  cursor: not-allowed;
+}
