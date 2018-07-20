@@ -4,16 +4,16 @@
  */
 
 /* 原生起 */
-// let http = require("http"); 
-// http.createServer(function(request, response) { 
-//     response.writeHead(200, {"Content-Type": "application/json;charset=UTF-8", "Access-Control-Allow-Origin": "*"}); 
+// let http = require("http");
+// http.createServer(function(request, response) {
+//     response.writeHead(200, {"Content-Type": "application/json;charset=UTF-8", "Access-Control-Allow-Origin": "*"});
 //     let json = {
 //         "name": "大熊",
 //         "sex": "男",
 //         "age": 20
 //     }
-//     response.write(JSON.stringify(json)); 
-//     response.end(); 
+//     response.write(JSON.stringify(json));
+//     response.end();
 // }).listen(9090);
 
 // import opn from 'opn'
@@ -30,7 +30,7 @@ let RedisStore = require('connect-redis')(session);
 // let MemcachedStore = require('connect-memcached')(session);
 import Router from '../router/index'
 import { getRandomString } from '../util/index'
-import Redis from '../util/Redis'
+// import Redis from '../util/Redis'
 let app = express()
 
 export default class NodeServer {
@@ -54,14 +54,14 @@ export default class NodeServer {
         this.app.use(cookieParser());
         this.app.use(expressValidator());
         // 不用express-session了，太虎
-        // this.app.use(session({
-        //     secret: '123456',
-        //     name: 'node',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
-        //     cookie: {maxAge: 30 * 60 * 1000 },  //设置过期时间，session和相应的cookie失效过期
-        //     resave: true, // 关键配置，让每个用户的session互不干扰
-        //     saveUninitialized: true,
-        //     store: new RedisStore(this.storeOption)
-        // }));
+        this.app.use(session({
+            secret: '123456',
+            name: 'node',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+            cookie: {maxAge: 10 * 1000 },  //设置过期时间，session和相应的cookie失效过期
+            resave: true, // 关键配置，让每个用户的session互不干扰
+            saveUninitialized: true,
+            // store: new RedisStore(this.storeOption)
+        }));
         this.router.init()
         let server = this.app.listen(9090, function () {
             let host = server.address().address
@@ -71,23 +71,23 @@ export default class NodeServer {
             // opn(uri)
         })
 
-        // 服务器重启，清空redis键值对
-        Redis.client.keys('*', function (err, keys) {
-            keys.forEach(e => { Redis.client.del(e) })
-            console.log('redis数据库键值对已被清除。')
-        });
-
-        // 能捕获到进程的代码错误异常退出、process.exit()方法退出
-        process.on('exit', (code) => {
-            console.log('进程退出。')
-            // console.log(`About to exit with code: ${code}`);
-            // 异步操作将不会执行，被强制丢弃
-            Redis.client.keys('*', function (err, keys) {
-                keys.forEach(e => { Redis.client.del(e) })
-                console.log(keys)
-                console.log('redis数据库键值对已被清除。')
-            });
-        });
+        // // 服务器重启，清空redis键值对
+        // Redis.client.keys('*', function (err, keys) {
+        //     keys.forEach(e => { Redis.client.del(e) })
+        //     console.log('redis数据库键值对已被清除。')
+        // });
+        //
+        // // 能捕获到进程的代码错误异常退出、process.exit()方法退出
+        // process.on('exit', (code) => {
+        //     console.log('进程退出。')
+        //     // console.log(`About to exit with code: ${code}`);
+        //     // 异步操作将不会执行，被强制丢弃
+        //     Redis.client.keys('*', function (err, keys) {
+        //         keys.forEach(e => { Redis.client.del(e) })
+        //         console.log(keys)
+        //         console.log('redis数据库键值对已被清除。')
+        //     });
+        // });
 
         // 捕获到操作者ctrl+c退出
         process.on('SIGINT', function () {

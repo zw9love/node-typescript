@@ -38,11 +38,13 @@ import { checkToken, getJson } from '../util/index'
 import multipart = require('connect-multiparty')
 import express = require('express')
 import bodyParser = require('body-parser')
-import Redis from '../util/Redis'
+// import Redis from '../util/Redis'
 const { check, validationResult } = require('express-validator/check')
 const { matchedData, sanitize } = require('express-validator/filter')
 import fs = require("fs")
 import multer = require('multer')
+// const svgCaptcha = require('svg-captcha');
+import svgCaptcha = require('svg-captcha')
 var storage = multer.diskStorage({
     // //设置上传后文件路径，uploads文件夹会自动创建。
     destination: function (req, file, cb) {
@@ -93,7 +95,7 @@ export default class Router {
     public beeeyeReport: BeeeyeReport = new BeeeyeReport()
     public beeeyeReportTemplate: BeeeyeReportTemplate = new BeeeyeReportTemplate()
     public app: any
-    public client: any = Redis.client
+    // public client: any = Redis.client
     private loginActive: boolean = false
     constructor(app: any) {
         this.app = app
@@ -1043,16 +1045,16 @@ export default class Router {
         this.app.post('/role/getCur', (request, response, next) => {
             checkToken(request, response, o => {
                 if (request.headers.token === 'debug') return response.json(getJson('成功', 200, { login_name: 'root', zh_names: '超级管理员', ids: 0 }))
-                this.client.get("role", function (err, res) {
-                    if (err) return false
-                    let role = JSON.parse(res)
-                    let data = {
-                        zh_names: role.username,
-                        login_name: role.login_name,
-                        ids: role.ids
-                    }
-                    response.json((getJson('成功', 200, data)))
-                })
+                // this.client.get("role", function (err, res) {
+                //     if (err) return false
+                //     let role = JSON.parse(res)
+                //     let data = {
+                //         zh_names: role.username,
+                //         login_name: role.login_name,
+                //         ids: role.ids
+                //     }
+                //     response.json((getJson('成功', 200, data)))
+                // })
             })
         })
 
@@ -1153,11 +1155,11 @@ export default class Router {
         // 调到这步说明了登录账号密码正确
         this.app.post('/login/loged', (request, response, next) => {
             this.loginActive = true
-            this.client.get("role", function (err, res) {
-                if (err) return false
-                let role = JSON.parse(res)
-                response.json((getJson('成功', 200, { role: role })))
-            })
+            // this.client.get("role", function (err, res) {
+            //     if (err) return false
+            //     let role = JSON.parse(res)
+            //     response.json((getJson('成功', 200, { role: role })))
+            // })
 
             // 老版本登录
             // this.loginActive = true
@@ -1179,6 +1181,46 @@ export default class Router {
             console.log('下载美女来了')
             let path = 'c:/mv.jpg'
             response.download(path)
+        })
+
+        // 测试验证码
+        this.app.post('/captcha', (req, res, next) => {
+            let codeConfig = {
+                size: 5,// 验证码长度
+                ignoreChars: '0o1i', // 验证码字符中排除 0o1i
+                noise: 2, // 干扰线条的数量
+                height: 44
+            }
+
+            let captcha = svgCaptcha.create(codeConfig)
+            // console.log('--------------')
+            // console.log(req.session)
+            // console.log('--------------')
+            req.session.captcha = captcha.text.toLowerCase(); //存session用于验证接口获取文字码
+            let codeData = {
+                img:captcha.data,
+                msg:captcha.text.toLowerCase()
+            }
+            res.send(codeData);
+        })
+
+        // Access the session as req.session
+        this.app.get('/', (req, response, next) => {
+            fs.readFile('view/captcha.html', function (err, data) {
+                // console.log(data)
+                response.writeHead(200, { 'Content-Type': 'text/html' });
+                response.end(data.toString())
+            })
+            // if (req.session.views) {
+            //     req.session.views++
+            //     res.setHeader('Content-Type', 'text/html')
+            //     res.write('<p>views: ' + req.session.views + '</p>')
+            //     res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
+            //     res.end()
+            // } else {
+            //     req.session.views = 1
+            //     res.end('welcome to the session demo. refresh!')
+            // }
         })
 
         // 重定向到/login

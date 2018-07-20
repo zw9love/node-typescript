@@ -6,9 +6,9 @@
 import crypto = require('crypto');  //加载加密文件
 import uuidv1 = require('uuid/v1');  //生成随机字符串
 import { request, response } from "../interface/index";
-import Redis from '../util/Redis'
-const client = Redis.client
-const expired = Redis.expired
+// import Redis from '../util/Redis'
+// const client = Redis.client
+// const expired = Redis.expired
 const key = 'zengwei'
 
 /**
