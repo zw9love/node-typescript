@@ -43,16 +43,16 @@ export default class User {
     * @param next 向下执行方法
     */
     addData(request: request, response: response, next: Function): void {
-        Redis.client.get("role", (err, res) => {
-            let role = JSON.parse(res)
-            let username = role.username
-            let json = request.body
-            this.service.addData(json, username, res => {
-                if (res.sum === 1) return response.json(getJson('用户名重复了，请更换用户名', 606, null))
-                if (res.affectedRows > 0) return response.json(getJson('成功', 200, null))
-                response.json(getJson('添加用户失败', 606, null))
-            }, next)
-        })
+        // Redis.client.get("role", (err, res) => {
+        //     let role = JSON.parse(res)
+        //     let username = role.username
+        //     let json = request.body
+        //     this.service.addData(json, username, res => {
+        //         if (res.sum === 1) return response.json(getJson('用户名重复了，请更换用户名', 606, null))
+        //         if (res.affectedRows > 0) return response.json(getJson('成功', 200, null))
+        //         response.json(getJson('添加用户失败', 606, null))
+        //     }, next)
+        // })
     }
 
     /**

@@ -1170,10 +1170,12 @@ export default class Router {
         // 文件读取login.html文件
         this.app.get('/login', (request, response, next) => {
             this.loginActive = false
-            fs.readFile('view/login.html', function (err, data) {
-                response.writeHead(200, { 'Content-Type': 'text/html' });
-                response.end(data.toString())
-            })
+            response.setHeader('Content-Type', 'text/html')
+            response.render('login')
+            // fs.readFile('views/login.html', function (err, data) {
+            //     response.writeHead(200, { 'Content-Type': 'text/html' });
+            //     response.end(data.toString())
+            // })
         })
 
         // 测试下载链接
@@ -1205,12 +1207,15 @@ export default class Router {
         })
 
         // Access the session as req.session
-        this.app.get('/', (req, response, next) => {
-            fs.readFile('view/captcha.html', function (err, data) {
-                // console.log(data)
-                response.writeHead(200, { 'Content-Type': 'text/html' });
-                response.end(data.toString())
-            })
+        this.app.get('/', (req, res, next) => {
+            // fs.readFile('view/captcha.html', function (err, data) {
+            //     // console.log(data)
+            //     res.writeHead(200, { 'Content-Type': 'text/html' });
+            //     res.end(data.toString())
+            // })
+            
+            // console.log(req.sessionID)
+            // console.log(req.session.id)
             // if (req.session.views) {
             //     req.session.views++
             //     res.setHeader('Content-Type', 'text/html')
@@ -1221,6 +1226,66 @@ export default class Router {
             //     req.session.views = 1
             //     res.end('welcome to the session demo. refresh!')
             // }
+
+            
+            // // 每次regenerate再生新的session
+            // req.session.regenerate(function(err) {
+            //     if(err) return res.json({ret_code: 2, ret_msg: '登录失败'});   
+            //     req.session.views = 1
+            //     req.session.username = 'zw9love'
+            //     // console.log(req.session)
+            //     res.end('welcome to the session demo. refresh!')
+            // })
+            
+            if(req.session.loginUser){
+                var loginUser = req.session.loginUser
+                var isLogined = loginUser
+                res.setHeader('Content-Type', 'text/html')
+                res.render('loged', {
+                    isLogined: isLogined,
+                    name: loginUser || ''
+                })
+            }else{
+                res.setHeader('Content-Type', 'text/html')
+                res.render('session')
+            }
+
+        })
+
+        // 退出登录
+        this.app.get('/logout', function(req, res, next){
+            // 备注：这里用的 session-file-store 在destroy 方法里，并没有销毁cookie
+            // 所以客户端的 cookie 还是存在，导致的问题 --> 退出登陆后，服务端检测到cookie
+            // 然后去查找对应的 session 文件，报错
+            // session-file-store 本身的bug    
+
+            req.session.destroy(function(err) {
+                if(err){
+                    res.json({ret_code: 2, ret_msg: '退出登录失败'});
+                    return;
+                }
+                // req.session.loginUser = null;
+                // res.clearCookie(identityKey);
+                res.redirect('/');
+            });
+        })
+
+        this.app.post('/login', (req, res, next) => {
+            // console.log(req)
+            let name = req.body.name
+            let password = req.body.password
+            // console.log('name = ' + name)
+            // console.log('password = ' + password)
+            if(name === 'admin' && password === 'admin'){
+                // 重新生成session，sessionID自然也变了
+                req.session.regenerate(function(err) {
+                    if(err) return res.json({ret_code: 2, ret_msg: '登录失败'});  
+                    req.session.loginUser = 'admin' 
+                    res.json({status: 200, data: null, msg: '成功'});   
+                })
+            }else{
+                res.json({status: 606, data: null, msg: '用户名或密码错误'});   
+            }
         })
 
         // 重定向到/login

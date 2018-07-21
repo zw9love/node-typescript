@@ -26,11 +26,12 @@ import bodyParser = require('body-parser')
 import session = require('express-session');
 import cookieParser = require('cookie-parser');
 import expressValidator = require('express-validator');
+import path = require('path');
 let RedisStore = require('connect-redis')(session);
 // let MemcachedStore = require('connect-memcached')(session);
 import Router from '../router/index'
 import { getRandomString } from '../util/index'
-// import Redis from '../util/Redis'
+import Redis from '../util/Redis'
 let app = express()
 
 export default class NodeServer {
@@ -49,7 +50,14 @@ export default class NodeServer {
     init(): void {
         // console.log('this.app初始化了')
         this.app.use(express.static("static"));
+        this.app.set('views', path.join(__dirname, '../../views'))
+        this.app.engine('html', require('ejs').renderFile)
+        // this.app.engine('html', require('consolidate').mustache)
+        this.app.set('view engine', 'html')
         // this.app.use(express.static("view"));
+        this.app.use(bodyParser.urlencoded({
+            extended: true
+          }));
         this.app.use(bodyParser.json());
         this.app.use(cookieParser());
         this.app.use(expressValidator());
@@ -57,11 +65,12 @@ export default class NodeServer {
         this.app.use(session({
             secret: '123456',
             name: 'node',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
-            cookie: {maxAge: 10 * 1000 },  //设置过期时间，session和相应的cookie失效过期
-            resave: true, // 关键配置，让每个用户的session互不干扰
-            saveUninitialized: true,
+            cookie: {maxAge: 300 * 1000, secure: false },  //设置过期时间，session和相应的cookie失效过期
+            resave: false, // 关键配置，让每个用户的session互不干扰
+            saveUninitialized: true, // 是否自动保存未初始化的会话，建议false
             // store: new RedisStore(this.storeOption)
         }));
+  
         this.router.init()
         let server = this.app.listen(9090, function () {
             let host = server.address().address
