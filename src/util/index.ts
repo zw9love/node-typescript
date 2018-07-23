@@ -87,16 +87,18 @@ function getRandomString(): string {
  * @description 检查token是否失效
  * @param request 请求体
  */
-function checkToken(request: request, response: response, successFn: Function): void {
+function checkToken(request: request, response: response, successFn: Function, errorFn? : Function): void {
     // 开发环境
-    if (successFn) successFn()
+    // if (successFn) successFn()
 
     // 生产环境
-    // let headerToken = request.headers.token
-    // if (headerToken === 'debug') {
-    //     if (successFn) successFn()
-    //     return
-    // }
+    let headerToken = request.headers.token
+    if (headerToken === 'debug') {
+        if (successFn) successFn()
+        return
+    }else{
+        if(errorFn) errorFn()
+    }
     // client.get(headerToken, function (err, replies) {
     //     if (replies === null) return response.json(getJson('用户登录失效', 611, null))
     //     // 能进到这就说明token存在且没过期

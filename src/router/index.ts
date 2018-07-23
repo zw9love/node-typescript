@@ -104,11 +104,20 @@ export default class Router {
      * @description 初始化方法
      */
     init(): void {
-        // 相当于拦截器
+        // 相当于拦截器，可用于全局检测token
         this.app.all("*", (req, res, next) => {
             res.header("Access-Control-Allow-Origin", "*"); //设置允许客户端跨域请求
             res.header("Content-Type", "application/json;charset=UTF-8"); //设置响应头数据类型
-            next();
+            // console.log(111)
+            if(req.method === 'POST'){
+                // console.log('先进我这')
+                checkToken(req, res, next, o => {
+                    // next()
+                    res.json(getJson('大哥你token呢？', 666))
+                })
+            }else{
+                next()
+            }
         })
 
         this.app.get('/regedit', (request, response, next) => {
