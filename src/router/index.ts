@@ -111,10 +111,11 @@ export default class Router {
             // console.log(111)
             if(req.method === 'POST'){
                 // console.log('先进我这')
-                checkToken(req, res, next, o => {
-                    // next()
-                    res.json(getJson('大哥你token呢？', 666))
-                })
+                // checkToken(req, res, next, o => {
+                //     // next()
+                //     res.json(getJson('大哥你token呢？', 666))
+                // })
+                next()
             }else{
                 next()
             }
@@ -1247,6 +1248,7 @@ export default class Router {
             // })
             
             if(req.session.loginUser){
+                req.session.views++
                 var loginUser = req.session.loginUser
                 var isLogined = loginUser
                 res.setHeader('Content-Type', 'text/html')
@@ -1255,6 +1257,7 @@ export default class Router {
                     name: loginUser || ''
                 })
             }else{
+                req.session.views = 1
                 res.setHeader('Content-Type', 'text/html')
                 res.render('session')
             }
